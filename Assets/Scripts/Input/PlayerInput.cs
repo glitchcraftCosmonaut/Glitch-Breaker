@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 [CreateAssetMenu(menuName = "Player Input")]
 public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
 {
+    public event UnityAction onAttack = delegate{};
     public Vector2 MoveInput {get; private set;}
     public Vector3 MousePos {get; private set;}
     public Vector2 MouseScreenPos {get; private set;}
@@ -76,6 +78,9 @@ public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        throw new System.NotImplementedException();
+        if(context.performed)
+        {
+            onAttack.Invoke();
+        }
     }
 }
