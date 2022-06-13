@@ -7,7 +7,8 @@ using UnityEngine.InputSystem;
 public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
 {
     public Vector2 MoveInput {get; private set;}
-    public Vector2 MousePos {get; private set;}
+    public Vector3 MousePos {get; private set;}
+    public Vector2 MouseScreenPos {get; private set;}
     public int NormInputX { get; private set; }
     public int NormInputY { get; private set; }
 
@@ -37,17 +38,19 @@ public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
     {
         inputActions.Disable();
         actionMap.Enable();
+        Cursor.visible = false;
 
-        if(isUIInput)
-        {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
-        else
-        {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-        }
+
+        // if(isUIInput)
+        // {
+        //     Cursor.visible = true;
+        //     // Cursor.lockState = CursorLockMode.None;
+        // }
+        // else
+        // {
+        //     Cursor.visible = false;
+        //     // Cursor.lockState = CursorLockMode.Locked;
+        // }
     }
     public void SwitchToDynamicUpdateMode() => InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsInDynamicUpdate;
     public void SwitchToFixedUpdateMode() => InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsInFixedUpdate;
@@ -61,6 +64,7 @@ public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
     public void OnMousePosition(InputAction.CallbackContext context)
     {
         MousePos = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());
+        MouseScreenPos = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());
     }
 
     public void OnMovement(InputAction.CallbackContext context)
@@ -68,5 +72,10 @@ public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
         MoveInput = context.ReadValue<Vector2>();
         NormInputX = Mathf.RoundToInt(MoveInput.x);
         NormInputY = Mathf.RoundToInt(MoveInput.y);
+    }
+
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        throw new System.NotImplementedException();
     }
 }
