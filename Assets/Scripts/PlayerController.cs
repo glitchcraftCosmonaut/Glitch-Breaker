@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D playerRB;
     Animator animator;
     [SerializeField] private float speed = 10f;
-    [SerializeField] private float attackDash = 2f;
+    [SerializeField] private float attackDash = 10f;
     private Vector3 targetPos;
     bool facingRight = true;
 
@@ -88,7 +88,8 @@ public class PlayerController : MonoBehaviour
     void Attack()
     {
         targetPos = new Vector3(input.MousePos.x, input.MousePos.y, 0);
-        transform.position = Vector2.MoveTowards(transform.position, targetPos, speed * 1 * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, targetPos, attackDash * 1 * Time.deltaTime);
+        animator.SetTrigger("AttackDash"); //bug here mf
         if (input.MousePos.x > transform.position.x && FacingDirection == -1)
         {
             Flip();
