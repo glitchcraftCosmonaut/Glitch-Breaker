@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using System;
 
 [CreateAssetMenu(menuName = "Player Input")]
 public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
 {
     public event UnityAction onAttack = delegate{};
+    public event UnityAction onStopAttack = delegate{};
     public Vector2 MoveInput {get; private set;}
     public Vector3 MousePos {get; private set;}
     public Vector2 MouseScreenPos {get; private set;}
     public int NormInputX { get; private set; }
     public int NormInputY { get; private set; }
+    public bool[] AttackInputs { get; private set; }
 
     InputActions inputActions;
 
@@ -24,6 +27,9 @@ public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
         inputActions = new InputActions();
 
         inputActions.Gameplay.SetCallbacks(this);
+        int count = Enum.GetValues(typeof(CombatInputs)).Length;
+        AttackInputs = new bool[count];
+
     //     inputActions.PauseMenu.SetCallbacks(this);
     //     int count = Enum.GetValues(typeof(CombatInputs)).Length;
     //     AttackInputs = new bool[count];
@@ -82,5 +88,26 @@ public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
         {
             onAttack.Invoke();
         }
+    }
+
+    public void OnPrimaryAttack(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            AttackInputs[(int)CombatInputs.primary] = true;
+            onAttack.Invoke();
+        }
+        if(context.canceled)
+        {
+            AttackInputs[(int)CombatInputs.primary] = false;
+            onStopAttack.Invoke();
+        }
+    }
+
+    public enum CombatInputs
+    {
+        primary,
+        secondary,
+        shootFire
     }
 }

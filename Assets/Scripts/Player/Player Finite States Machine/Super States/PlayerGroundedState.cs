@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static PlayerInput;
+
 
 public class PlayerGroundedState : PlayerState
 {
     protected int xInput;
     protected int yInput;
+    protected int mouseInputX;
     
     public PlayerGroundedState(PlayerController player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
@@ -31,6 +34,13 @@ public class PlayerGroundedState : PlayerState
         base.LogicUpdate();
         xInput = player.input.NormInputX;
         yInput = player.input.NormInputY;
+        mouseInputX = Mathf.FloorToInt(player.input.MousePos.x);
+
+        if (player.input.AttackInputs[(int)CombatInputs.primary])
+        {
+            player.CheckIfShouldFlipMousePos(mouseInputX);
+            stateMachine.ChangeState(player.PrimaryAttack);
+        }
     }
 
     public override void PhysicsUpdate()

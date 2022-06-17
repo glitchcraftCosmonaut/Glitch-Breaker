@@ -24,6 +24,10 @@ public class PlayerAbilityState : PlayerState
     public override void LogicUpdate()
     {
         base.LogicUpdate();
+        if (isAbilityDone)
+        {
+            stateMachine.ChangeState(player.IdleState);
+        }
     }
 
     public override void PhysicsUpdate()

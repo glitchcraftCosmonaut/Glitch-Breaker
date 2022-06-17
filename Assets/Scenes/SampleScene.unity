@@ -500,7 +500,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: {fileID: 11400000, guid: f6a028c2d98e32a449103f590f864eb0, type: 2}
   speed: 10
-  attackDash: 10
+  attackDash: 20
 --- !u!50 &1476855371
 Rigidbody2D:
   serializedVersion: 4

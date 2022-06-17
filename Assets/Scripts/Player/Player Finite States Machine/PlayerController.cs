@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
 
 
     protected int xInput;
-    private Rigidbody2D playerRB;
+    [HideInInspector] public Rigidbody2D playerRB;
     
 
     
@@ -68,7 +68,7 @@ public class PlayerController : MonoBehaviour
     private void OnDisable()
     {
         // playerInput.Disable();
-        input.onAttack -= Attack;
+        input.onStopAttack -= Attack;
 
     }
     private void Start()
@@ -100,6 +100,18 @@ public class PlayerController : MonoBehaviour
             Flip();
         }
     }
+
+    public void CheckIfShouldFlipMousePos(int mouseInputX)
+    {
+        if (mouseInputX > transform.position.x && FacingDirection == -1)
+        {
+            Flip();
+        }
+        else if (mouseInputX < transform.position.x && FacingDirection == 1)
+        {
+            Flip();
+        }
+    }
     public void Flip()
     {
         FacingDirection *= -1;
@@ -112,17 +124,19 @@ public class PlayerController : MonoBehaviour
     {
         targetPos = new Vector3(input.MousePos.x, input.MousePos.y, 0);
         transform.position = Vector2.MoveTowards(transform.position, targetPos, attackDash * 1 * Time.deltaTime);
-        Anim.SetTrigger("AttackDash"); //bug here mf
-        if (input.MousePos.x > transform.position.x && FacingDirection == -1)
-        {
-            Flip();
-        }
-        else if (input.MousePos.x < transform.position.x && FacingDirection == 1)
-        {
-            Flip();
-        }
+        // Anim.SetTrigger("AttackDash"); //bug here mf
+        // if (input.MousePos.x > transform.position.x && FacingDirection == -1)
+        // {
+        //     Flip();
+        // }
+        // else if (input.MousePos.x < transform.position.x && FacingDirection == 1)
+        // {
+        //     Flip();
+        // }
     }
     private void AnimationTrigger() => StateMachine.CurrentState.AnimationTrigger();
 
-    private void AnimtionFinishTrigger() => StateMachine.CurrentState.AnimationFinishTrigger();
+    private void AnimationFinishTrigger() => StateMachine.CurrentState.AnimationFinishTrigger();
+    private void AnimationTurnOnFlipTigger() => StateMachine.CurrentState.AnimationTurnOnFlipTigger();
+    private void AnimationTurnOffFlipTigger() => StateMachine.CurrentState.AnimationTurnOffFlipTrigger();
 }

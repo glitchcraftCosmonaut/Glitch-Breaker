@@ -56,5 +56,7 @@ public class PlayerState
 
     //using this for animation finish trigger in unity editor
     public virtual void AnimationFinishTrigger() => isAnimationFinished = true;
+    public virtual void AnimationTurnOffFlipTrigger() {}
+    public virtual void AnimationTurnOnFlipTigger() {}
     
 }
