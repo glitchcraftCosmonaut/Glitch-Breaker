@@ -5,8 +5,12 @@ using UnityEngine;
 public class PlayerAttackState : PlayerAbilityState
 {
     public int amountOfAttacks { get; protected set; }
-    public float[] movementSpeed { get; protected set; }
+    public float movementSpeed { get; protected set; }
     private int xInput;
+    protected int mouseInputX;
+
+    private Vector2 attackDirection;
+    private Vector2 attackDirectionInput; 
 
     private float velocityToSet;
 
@@ -14,6 +18,9 @@ public class PlayerAttackState : PlayerAbilityState
     private bool shouldCheckFlip;
 
     protected int attackCounter;
+
+    protected Vector3 targetPos;
+
 
     public PlayerAttackState(PlayerController player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
@@ -25,6 +32,7 @@ public class PlayerAttackState : PlayerAbilityState
     {
         base.Enter();
         setVelocity = false;
+        attackDirection = Vector2.right * player.FacingDirection;
         if(attackCounter >= amountOfAttacks)
         {
             attackCounter = 0;
@@ -44,6 +52,15 @@ public class PlayerAttackState : PlayerAbilityState
     public override void LogicUpdate()
     {
         base.LogicUpdate();
+        attackDirectionInput = player.input.AttackDirectionInput;
+        if(attackDirectionInput != Vector2.zero)
+        {
+            attackDirection = attackDirectionInput;
+            attackDirection.Normalize();
+            player.CheckIfShouldFlip(Mathf.RoundToInt(attackDirection.x));
+            player.playerRB.drag = player.drag;
+            player.SetVelocity(player.attackDash, attackDirection);
+        }
     }
 
     public override void PhysicsUpdate()
@@ -53,6 +70,11 @@ public class PlayerAttackState : PlayerAbilityState
     public override void AnimationTrigger()
     {
         base.AnimationTrigger();
+    }
+    public void SetPlayerVelocity(float velocity)
+    {
+        velocityToSet = velocity;
+        setVelocity = true;
     }
 
     public void SetFlipCheck(bool value)
@@ -77,13 +99,13 @@ public class PlayerAttackState : PlayerAbilityState
     }
     
 
-    // public virtual void AnimationStartMovementTrigger()
-    // {
-    //     SetPlayerVelocity(weaponData.movementSpeed[attackCounter]);
-    // }
+    public override void AnimationStartMovementTrigger()
+    {
+        SetPlayerVelocity(player.attackDash);
+    }
 
-    // public virtual void AnimationStopMovementTrigger()
-    // {
-    //     SetPlayerVelocity(0f);
-    // }
+    public override void AnimationStopMovementTrigger()
+    {
+        SetPlayerVelocity(0f);
+    }
 }

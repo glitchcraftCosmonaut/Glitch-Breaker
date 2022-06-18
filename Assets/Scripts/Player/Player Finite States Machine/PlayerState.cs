@@ -10,8 +10,10 @@ public class PlayerState
 
     protected bool isAnimationFinished;
     protected bool isExitingState;
+    protected bool isAbilityDone;
     protected float startTime;
     private string animBoolName;
+
 
     public PlayerState( PlayerController player, PlayerStateMachine stateMachine, string animBoolName)
     {
@@ -58,5 +60,7 @@ public class PlayerState
     public virtual void AnimationFinishTrigger() => isAnimationFinished = true;
     public virtual void AnimationTurnOffFlipTrigger() {}
     public virtual void AnimationTurnOnFlipTigger() {}
+    public virtual void AnimationStartMovementTrigger() {}
+    public virtual void AnimationStopMovementTrigger() {}
     
 }

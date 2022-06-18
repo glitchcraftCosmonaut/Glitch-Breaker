@@ -23,11 +23,22 @@ public class PlayerMoveState : PlayerGroundedState
     public override void LogicUpdate()
     {
         base.LogicUpdate();
+        // mouseInputX = Mathf.FloorToInt(player.input.MousePos.x);
+
         player.CheckIfShouldFlip(xInput);
+        // if(isAbilityDone)
+        // {
+        //     player.CheckIfShouldFlipMousePos(mouseInputX);
+        // }
+        // if(!isAbilityDone)
+        // {
+        //     player.CheckIfShouldFlip(xInput);
+        // }
         
         
 
-        // player.SetVelocityY(player.speed * yInput);
+        player.SetVelocityY(player.speed * yInput);
+        player.SetVelocityX(player.speed * xInput);
         if (!isExitingState)
         {
             if (xInput == 0 && yInput == 0)

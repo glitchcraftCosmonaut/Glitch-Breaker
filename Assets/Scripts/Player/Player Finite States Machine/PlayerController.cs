@@ -33,9 +33,11 @@ public class PlayerController : MonoBehaviour
     
     #region Player Data
     // private InputActions playerInput;
-    [SerializeField] public PlayerInput input;
+    [HideInInspector] public PlayerInput input;
     [SerializeField] public float speed = 10f;
-    [SerializeField] private float attackDash = 10f;
+    [SerializeField] public float attackDash = 10f;
+    public float drag = 10f;
+
     private Vector3 targetPos;
 
     #endregion
@@ -49,9 +51,11 @@ public class PlayerController : MonoBehaviour
     private void Awake() 
     {
         // playerInput = new InputActions();
+        input = GetComponent<PlayerInput>();
         playerRB = GetComponent<Rigidbody2D>();
         Anim = GetComponent<Animator>();
         FacingDirection = 1;
+        CanSetVelocity = true;
 
         #region statemachine
         StateMachine = new PlayerStateMachine();
@@ -63,12 +67,12 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         // playerInput.Enable();
-        input.onAttack += Attack;
+        // input.onAttack += Attack;
     }
     private void OnDisable()
     {
         // playerInput.Disable();
-        input.onStopAttack -= Attack;
+        // input.onAttack -= Attack;
 
     }
     private void Start()
@@ -88,19 +92,10 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         StateMachine.CurrentState.PhysicsUpdate();
-        playerRB.velocity = input.MoveInput * speed;
+        // playerRB.velocity = input.MoveInput * speed;
    
         // Anim.SetFloat("Speed", input.MoveInput.sqrMagnitude);
     }
-
-    public void CheckIfShouldFlip(int xInput)
-    {
-        if(xInput != 0 && xInput !=FacingDirection)
-        {
-            Flip();
-        }
-    }
-
     public void CheckIfShouldFlipMousePos(int mouseInputX)
     {
         if (mouseInputX > transform.position.x && FacingDirection == -1)
@@ -112,6 +107,59 @@ public class PlayerController : MonoBehaviour
             Flip();
         }
     }
+
+    public void CheckIfShouldFlip(int xInput)
+    {
+        if(xInput != 0 && xInput !=FacingDirection)
+        {
+            Flip();
+        }
+    }
+     public void SetVelocityZero()
+    {
+        workspace = Vector2.zero;        
+        SetFinalVelocity();
+    }
+
+    public void SetVelocity(float velocity, Vector2 angle, float direction)
+    {
+        angle.Normalize();
+        workspace.Set(angle.x * velocity * direction, angle.y * velocity);
+        SetFinalVelocity();
+    }
+
+    public void SetVelocity(float velocity, Vector2 direction)
+    {
+        workspace = direction * velocity;
+        SetFinalVelocity();
+    }
+
+    public void SetVelocityX(float velocity)
+    {
+        workspace.Set(velocity, CurrentVelocity.y);
+        SetFinalVelocity();
+    }
+
+    public void SetVelocityY(float velocity)
+    {
+        workspace.Set(CurrentVelocity.x, velocity);
+        SetFinalVelocity();
+    }
+    public void SetVelocityXY(float velocityX, float velocityY)
+    {
+        workspace.Set(velocityX, velocityY);
+        SetFinalVelocity();
+    }
+
+    private void SetFinalVelocity()
+    {
+        if (CanSetVelocity)
+        {
+            playerRB.velocity = workspace;
+            CurrentVelocity = workspace;
+        }        
+    }
+
     public void Flip()
     {
         FacingDirection *= -1;
@@ -122,9 +170,9 @@ public class PlayerController : MonoBehaviour
     // FIX THIS K
     void Attack()
     {
-        targetPos = new Vector3(input.MousePos.x, input.MousePos.y, 0);
-        transform.position = Vector2.MoveTowards(transform.position, targetPos, attackDash * 1 * Time.deltaTime);
-        // Anim.SetTrigger("AttackDash"); //bug here mf
+        // targetPos = new Vector3(input.MousePos.x, input.MousePos.y, 0);
+        // transform.position = Vector2.MoveTowards(transform.position, targetPos, attackDash * 1 * Time.deltaTime);
+        // // Anim.SetTrigger("AttackDash"); //bug here mf
         // if (input.MousePos.x > transform.position.x && FacingDirection == -1)
         // {
         //     Flip();
@@ -139,4 +187,6 @@ public class PlayerController : MonoBehaviour
     private void AnimationFinishTrigger() => StateMachine.CurrentState.AnimationFinishTrigger();
     private void AnimationTurnOnFlipTigger() => StateMachine.CurrentState.AnimationTurnOnFlipTigger();
     private void AnimationTurnOffFlipTigger() => StateMachine.CurrentState.AnimationTurnOffFlipTrigger();
+    private void AnimationStartMovementTrigger() => StateMachine.CurrentState.AnimationStartMovementTrigger();
+    private void AnimationStopMovementTrigger() => StateMachine.CurrentState.AnimationStopMovementTrigger();
 }

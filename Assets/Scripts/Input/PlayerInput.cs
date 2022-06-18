@@ -5,17 +5,23 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using System;
 
-[CreateAssetMenu(menuName = "Player Input")]
-public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
+// [CreateAssetMenu(menuName = "Player Input")]
+public class PlayerInput : MonoBehaviour, InputActions.IGameplayActions
 {
+    private PlayerInput playerInput;
+    private PlayerController player;
     public event UnityAction onAttack = delegate{};
     public event UnityAction onStopAttack = delegate{};
     public Vector2 MoveInput {get; private set;}
     public Vector3 MousePos {get; private set;}
     public Vector2 MouseScreenPos {get; private set;}
+    public Vector2 RawAttackDirectionInput { get; private set; }
+    public Vector2Int AttackDirectionInput { get; private set; }
+
     public int NormInputX { get; private set; }
     public int NormInputY { get; private set; }
     public bool[] AttackInputs { get; private set; }
+    public bool IsAttacking {get; private set;}
 
     InputActions inputActions;
 
@@ -80,6 +86,7 @@ public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
         MoveInput = context.ReadValue<Vector2>();
         NormInputX = Mathf.RoundToInt(MoveInput.x);
         NormInputY = Mathf.RoundToInt(MoveInput.y);
+       
     }
 
     public void OnAttack(InputAction.CallbackContext context)
@@ -92,16 +99,29 @@ public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
 
     public void OnPrimaryAttack(InputAction.CallbackContext context)
     {
+        // if(playerInput.currentControlScheme == "Keyboard")
+        // RawAttackDirectionInput = Camera.main.ScreenToWorldPoint((Vector3)RawAttackDirectionInput) - player.transform.position;
+        
         if(context.performed)
         {
             AttackInputs[(int)CombatInputs.primary] = true;
-            onAttack.Invoke();
+            // IsAttacking = true;
+            // onAttack.Invoke();
         }
         if(context.canceled)
         {
             AttackInputs[(int)CombatInputs.primary] = false;
-            onStopAttack.Invoke();
+            // IsAttacking = false;
+            // onStopAttack.Invoke();
         }
+    }
+
+    public void OnAttackDirection(InputAction.CallbackContext context)
+    {
+        RawAttackDirectionInput = context.ReadValue<Vector2>();
+        // RawAttackDirectionInput = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());;
+        RawAttackDirectionInput = Camera.main.ScreenToWorldPoint((Vector3)RawAttackDirectionInput) - transform.position;
+        AttackDirectionInput = Vector2Int.RoundToInt(RawAttackDirectionInput.normalized);
     }
 
     public enum CombatInputs

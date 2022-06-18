@@ -41,6 +41,14 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""AttackDirection"",
+                    ""type"": ""Value"",
+                    ""id"": ""a6354c56-7340-487e-8f56-9556d5f6f9bf"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -120,6 +128,17 @@ public class @InputActions : IInputActionCollection, IDisposable
                     ""action"": ""PrimaryAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e79038fe-8ac7-4e91-bda7-563496e928ff"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""AttackDirection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -129,6 +148,11 @@ public class @InputActions : IInputActionCollection, IDisposable
             ""name"": ""Keyboard"",
             ""bindingGroup"": ""Keyboard"",
             ""devices"": []
+        },
+        {
+            ""name"": ""Gamepad"",
+            ""bindingGroup"": ""Gamepad"",
+            ""devices"": []
         }
     ]
 }");
@@ -137,6 +161,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         m_Gameplay_Movement = m_Gameplay.FindAction("Movement", throwIfNotFound: true);
         m_Gameplay_MousePosition = m_Gameplay.FindAction("MousePosition", throwIfNotFound: true);
         m_Gameplay_PrimaryAttack = m_Gameplay.FindAction("PrimaryAttack", throwIfNotFound: true);
+        m_Gameplay_AttackDirection = m_Gameplay.FindAction("AttackDirection", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -189,6 +214,7 @@ public class @InputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Gameplay_Movement;
     private readonly InputAction m_Gameplay_MousePosition;
     private readonly InputAction m_Gameplay_PrimaryAttack;
+    private readonly InputAction m_Gameplay_AttackDirection;
     public struct GameplayActions
     {
         private @InputActions m_Wrapper;
@@ -196,6 +222,7 @@ public class @InputActions : IInputActionCollection, IDisposable
         public InputAction @Movement => m_Wrapper.m_Gameplay_Movement;
         public InputAction @MousePosition => m_Wrapper.m_Gameplay_MousePosition;
         public InputAction @PrimaryAttack => m_Wrapper.m_Gameplay_PrimaryAttack;
+        public InputAction @AttackDirection => m_Wrapper.m_Gameplay_AttackDirection;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -214,6 +241,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @PrimaryAttack.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPrimaryAttack;
                 @PrimaryAttack.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPrimaryAttack;
                 @PrimaryAttack.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPrimaryAttack;
+                @AttackDirection.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAttackDirection;
+                @AttackDirection.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAttackDirection;
+                @AttackDirection.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAttackDirection;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -227,6 +257,9 @@ public class @InputActions : IInputActionCollection, IDisposable
                 @PrimaryAttack.started += instance.OnPrimaryAttack;
                 @PrimaryAttack.performed += instance.OnPrimaryAttack;
                 @PrimaryAttack.canceled += instance.OnPrimaryAttack;
+                @AttackDirection.started += instance.OnAttackDirection;
+                @AttackDirection.performed += instance.OnAttackDirection;
+                @AttackDirection.canceled += instance.OnAttackDirection;
             }
         }
     }
@@ -240,10 +273,20 @@ public class @InputActions : IInputActionCollection, IDisposable
             return asset.controlSchemes[m_KeyboardSchemeIndex];
         }
     }
+    private int m_GamepadSchemeIndex = -1;
+    public InputControlScheme GamepadScheme
+    {
+        get
+        {
+            if (m_GamepadSchemeIndex == -1) m_GamepadSchemeIndex = asset.FindControlSchemeIndex("Gamepad");
+            return asset.controlSchemes[m_GamepadSchemeIndex];
+        }
+    }
     public interface IGameplayActions
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnMousePosition(InputAction.CallbackContext context);
         void OnPrimaryAttack(InputAction.CallbackContext context);
+        void OnAttackDirection(InputAction.CallbackContext context);
     }
 }

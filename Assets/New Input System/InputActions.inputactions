@@ -28,6 +28,14 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "AttackDirection",
+                    "type": "Value",
+                    "id": "a6354c56-7340-487e-8f56-9556d5f6f9bf",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -107,6 +115,17 @@
                     "action": "PrimaryAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e79038fe-8ac7-4e91-bda7-563496e928ff",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "AttackDirection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
@@ -115,6 +134,11 @@
         {
             "name": "Keyboard",
             "bindingGroup": "Keyboard",
+            "devices": []
+        },
+        {
+            "name": "Gamepad",
+            "bindingGroup": "Gamepad",
             "devices": []
         }
     ]

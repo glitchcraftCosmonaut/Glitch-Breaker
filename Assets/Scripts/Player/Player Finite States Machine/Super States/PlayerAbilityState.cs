@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerAbilityState : PlayerState
 {
-    protected bool isAbilityDone;
     public PlayerAbilityState(PlayerController player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
