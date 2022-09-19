@@ -12,6 +12,7 @@ public class PlayerMoveState : PlayerGroundedState
     public override void Enter()
     {
         base.Enter();
+
     }
 
     public override void Exit()
@@ -26,26 +27,36 @@ public class PlayerMoveState : PlayerGroundedState
         // mouseInputX = Mathf.FloorToInt(player.input.MousePos.x);
 
         player.CheckIfShouldFlip(xInput);
-        // if(isAbilityDone)
-        // {
-        //     player.CheckIfShouldFlipMousePos(mouseInputX);
-        // }
+        if(!isAbilityDone)
+        {
+            // player.CheckIfShouldFlipMousePos(mouseInputX);
+            // player.CheckIfShouldFlip(xInput);
+            player.SetVelocityY(player.speed * yInput);
+            player.SetVelocityX(player.speed * xInput);
+        }
         // if(!isAbilityDone)
         // {
         //     player.CheckIfShouldFlip(xInput);
         // }
-        
-        
-
-        player.SetVelocityY(player.speed * yInput);
-        player.SetVelocityX(player.speed * xInput);
         if (!isExitingState)
         {
             if (xInput == 0 && yInput == 0)
             {
                 stateMachine.ChangeState(player.IdleState);
             }
-        } 
+        }
+        
+        
+
+        // player.SetVelocityY(player.speed * yInput);
+        // player.SetVelocityX(player.speed * xInput);
+        // if (!isExitingState)
+        // {
+        //     if (xInput == 0 && yInput == 0)
+        //     {
+        //         stateMachine.ChangeState(player.IdleState);
+        //     }
+        // } 
     }
 
     public override void PhysicsUpdate()

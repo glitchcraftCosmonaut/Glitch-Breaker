@@ -20,7 +20,9 @@ public class PlayerInput : MonoBehaviour, InputActions.IGameplayActions
 
     public int NormInputX { get; private set; }
     public int NormInputY { get; private set; }
+    public bool MoveInputStop { get; private set; }
     public bool[] AttackInputs { get; private set; }
+    public bool AttackInputStop { get; private set; }
     public bool IsAttacking {get; private set;}
 
     InputActions inputActions;
@@ -105,16 +107,20 @@ public class PlayerInput : MonoBehaviour, InputActions.IGameplayActions
         if(context.performed)
         {
             AttackInputs[(int)CombatInputs.primary] = true;
+            AttackInputStop = false;
             // IsAttacking = true;
             // onAttack.Invoke();
         }
         if(context.canceled)
         {
             AttackInputs[(int)CombatInputs.primary] = false;
+            AttackInputStop = true;
             // IsAttacking = false;
             // onStopAttack.Invoke();
         }
     }
+
+    public void UsePrimaryAttackInput() => AttackInputs[(int)CombatInputs.primary] = false;
 
     public void OnAttackDirection(InputAction.CallbackContext context)
     {

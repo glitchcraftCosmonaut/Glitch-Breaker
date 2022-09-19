@@ -31,6 +31,7 @@ public class PlayerAttackState : PlayerAbilityState
     public override void Enter()
     {
         base.Enter();
+        player.input.UsePrimaryAttackInput();
         setVelocity = false;
         attackDirection = Vector2.right * player.FacingDirection;
         if(attackCounter >= amountOfAttacks)
@@ -58,8 +59,12 @@ public class PlayerAttackState : PlayerAbilityState
             attackDirection = attackDirectionInput;
             attackDirection.Normalize();
             player.CheckIfShouldFlip(Mathf.RoundToInt(attackDirection.x));
+        }
+        if(setVelocity)
+        {
+            attackDirectionInput.Normalize();
+            player.SetVelocity(player.attackDash, attackDirectionInput);
             player.playerRB.drag = player.drag;
-            player.SetVelocity(player.attackDash, attackDirection);
         }
     }
 
