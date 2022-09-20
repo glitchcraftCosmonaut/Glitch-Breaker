@@ -36,6 +36,8 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public PlayerInput input;
     [SerializeField] public float speed = 10f;
     [SerializeField] public float attackDash = 10f;
+    [SerializeField] public GameObject projectile;
+    [SerializeField] public Transform muzzle;
     public float drag = 10f;
 
     private Vector3 targetPos;
@@ -85,6 +87,8 @@ public class PlayerController : MonoBehaviour
     {
         CurrentVelocity = playerRB.velocity;
         StateMachine.CurrentState.LogicUpdate();
+        // PoolManager.Release(projectile, muzzle.position, Quaternion.identity);
+
  
         // }
     }

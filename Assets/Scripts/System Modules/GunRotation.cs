@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class GunRotation : MonoBehaviour
 {
+    [HideInInspector] public float angle;
     public float offset;
     private SpriteRenderer spriteRender;
+    private PlayerProjectile playerProjectile;
     public PlayerInput playerInput;
 
 
@@ -13,6 +15,7 @@ public class GunRotation : MonoBehaviour
     void Start()
     {
         spriteRender = GetComponent<SpriteRenderer>();
+        playerProjectile = FindObjectOfType<PlayerProjectile>();
     }
 
 
@@ -20,16 +23,17 @@ public class GunRotation : MonoBehaviour
     void Update()
     {
         Vector3 targetDirection = playerInput.MousePos - transform.position;
-        float angle = Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg;
+        angle = Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(new Vector3(0f,0f, angle + offset));
-         if (angle < 89 && angle > -89)
+        if (angle < 89 && angle > -89)
         {
-            Debug.Log("Facing right");
+            // Debug.Log("Facing right");
             spriteRender.flipY = false;
+
         }
         else
         {
-            Debug.Log("Facing left");
+            // Debug.Log("Facing left");
             spriteRender.flipY = true;
         }
     }

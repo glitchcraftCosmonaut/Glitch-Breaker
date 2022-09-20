@@ -40,6 +40,7 @@ public class PlayerGroundedState : PlayerState
         {
             // player.CheckIfShouldFlipMousePos(mouseInputX);
             stateMachine.ChangeState(player.PrimaryAttack);
+            PoolManager.Release(player.projectile, player.muzzle.position, player.muzzle.transform.rotation);
         }
     }
 
