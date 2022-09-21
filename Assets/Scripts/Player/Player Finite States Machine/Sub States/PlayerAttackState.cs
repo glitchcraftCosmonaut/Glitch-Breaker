@@ -32,13 +32,16 @@ public class PlayerAttackState : PlayerAbilityState
     {
         base.Enter();
         player.input.UsePrimaryAttackInput();
+        attackDirectionInput = player.input.AttackDirectionInput;
+        attackDirection = attackDirectionInput;
+
         setVelocity = false;
-        attackDirection = Vector2.right * player.FacingDirection;
+        // attackDirection = Vector2.right * player.FacingDirection;
         if(attackCounter >= amountOfAttacks)
         {
             attackCounter = 0;
         }
-        player.Anim.SetBool("Attack",true);
+        // player.Anim.SetBool("Attack",true);
         player.Anim.SetInteger("AttackCounter", attackCounter);
        
     }
@@ -46,25 +49,38 @@ public class PlayerAttackState : PlayerAbilityState
     public override void Exit()
     {
         base.Exit();
-        player.Anim.SetBool("Attack", false);
+        // player.Anim.SetBool("Attack", false);
         attackCounter++;
+        // for future update using counter and reset attack when player already reach 3 attack combo and cooldown on certain time
+        // also do continuous combo on certain time so when player doesn't click attack button continuous the counter will reset
+        if(attackCounter <= 3)
+        {
+            attackCounter = 0;
+        }
     }
 
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-        attackDirectionInput = player.input.AttackDirectionInput;
-        if(attackDirectionInput != Vector2.zero)
+        // float angle = Mathf.Atan2(attackDirection.y, attackDirection.x) * Mathf.Rad2Deg;
+        if(!isExitingState)
         {
-            attackDirection = attackDirectionInput;
-            attackDirection.Normalize();
-            player.CheckIfShouldFlip(Mathf.RoundToInt(attackDirection.x));
-        }
-        if(setVelocity)
-        {
-            attackDirectionInput.Normalize();
-            player.SetVelocity(player.attackDash, attackDirectionInput);
-            player.playerRB.drag = player.drag;
+            // attackDirectionInput = player.input.AttackDirectionInput;
+            if(attackDirectionInput != Vector2.zero || setVelocity)
+            {
+                // attackDirection = attackDirectionInput;
+                attackDirection.Normalize();
+
+                player.CheckIfShouldFlip(Mathf.RoundToInt(attackDirection.x));
+                player.SetVelocity(player.attackDash, attackDirectionInput);
+                player.playerRB.drag = player.drag;
+            }
+            // if(setVelocity)
+            // {
+            //     attackDirectionInput.Normalize();
+            //     player.SetVelocity(player.attackDash, attackDirectionInput);
+            //     player.playerRB.drag = player.drag;
+            // }
         }
     }
 

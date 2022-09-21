@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static PlayerInput;
+using static PlayerInputHandler;
 using UnityEngine.InputSystem;
 
 
@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     public PlayerIdleState IdleState { get; private set; }
     public PlayerMoveState MoveState { get; private set; }
     public PlayerAttackState PrimaryAttack { get; private set; }
+    public PlayerDashState DashState { get; private set;}
 
     #endregion
 
@@ -33,9 +34,12 @@ public class PlayerController : MonoBehaviour
     
     #region Player Data
     // private InputActions playerInput;
-    [HideInInspector] public PlayerInput input;
+    [HideInInspector] public PlayerInputHandler input;
     [SerializeField] public float speed = 10f;
     [SerializeField] public float attackDash = 10f;
+    [SerializeField] public float dashSpeed = 10f;
+    [SerializeField] public float dashCooldown = 2f;
+    [SerializeField] public float dashTime = 0.2f;
     [SerializeField] public GameObject projectile;
     [SerializeField] public Transform muzzle;
     public float drag = 10f;
@@ -53,7 +57,7 @@ public class PlayerController : MonoBehaviour
     private void Awake() 
     {
         // playerInput = new InputActions();
-        input = GetComponent<PlayerInput>();
+        input = GetComponent<PlayerInputHandler>();
         playerRB = GetComponent<Rigidbody2D>();
         Anim = GetComponent<Animator>();
         FacingDirection = 1;
@@ -64,6 +68,7 @@ public class PlayerController : MonoBehaviour
         IdleState = new PlayerIdleState(this, StateMachine,"Idle");
         MoveState = new PlayerMoveState (this, StateMachine, "Move");
         PrimaryAttack = new PlayerAttackState (this, StateMachine, "Attack");
+        DashState = new PlayerDashState (this, StateMachine, "Dash");
         #endregion
     }
     private void OnEnable()

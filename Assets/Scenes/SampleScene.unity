@@ -651,8 +651,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   input: {fileID: 0}
-  speed: 10
+  speed: 5
   attackDash: 5
+  dashSpeed: 10
+  dashCooldown: 0.5
+  dashTime: 0.2
   projectile: {fileID: 4376230385047232203, guid: d90931c58baf4224a9bc7d98113a2118, type: 3}
   muzzle: {fileID: 998096032}
   drag: 10

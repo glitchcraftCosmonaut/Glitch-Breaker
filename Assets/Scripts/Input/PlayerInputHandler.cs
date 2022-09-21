@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 using System;
 
 // [CreateAssetMenu(menuName = "Player Input")]
-public class PlayerInput : MonoBehaviour, InputActions.IGameplayActions
+public class PlayerInputHandler : MonoBehaviour, InputActions.IGameplayActions
 {
     private PlayerInput playerInput;
     private PlayerController player;
@@ -16,14 +16,17 @@ public class PlayerInput : MonoBehaviour, InputActions.IGameplayActions
     public Vector3 MousePos {get; private set;}
     public Vector2 MouseScreenPos {get; private set;}
     public Vector2 RawAttackDirectionInput { get; private set; }
-    public Vector2Int AttackDirectionInput { get; private set; }
+    public Vector2 AttackDirectionInput { get; private set; }
+    public Vector2 RawDashDirectionInput { get; private set; }
+    public Vector2 DashDirectionInput { get; private set; }
 
     public int NormInputX { get; private set; }
     public int NormInputY { get; private set; }
     public bool MoveInputStop { get; private set; }
     public bool[] AttackInputs { get; private set; }
     public bool AttackInputStop { get; private set; }
-    public bool IsAttacking {get; private set;}
+    public bool DashInput { get; private set;}
+    public bool DashInputStop { get; private set; }
 
     InputActions inputActions;
 
@@ -33,6 +36,7 @@ public class PlayerInput : MonoBehaviour, InputActions.IGameplayActions
     private void OnEnable()
     {
         inputActions = new InputActions();
+        // playerInput = new PlayerInput();
 
         inputActions.Gameplay.SetCallbacks(this);
         int count = Enum.GetValues(typeof(CombatInputs)).Length;
@@ -47,6 +51,10 @@ public class PlayerInput : MonoBehaviour, InputActions.IGameplayActions
         DisableAllInput();
 
     }
+    // private void Start()
+    // {
+    //     playerInput = GetComponent<PlayerInput>();
+    // }
 #endregion
 #region INPUT HANDLER
 
@@ -120,15 +128,47 @@ public class PlayerInput : MonoBehaviour, InputActions.IGameplayActions
         }
     }
 
-    public void UsePrimaryAttackInput() => AttackInputs[(int)CombatInputs.primary] = false;
+    public void OnDash(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            DashInput = true;
+            DashInputStop = false;
+            // dashInputStartTime = Time.time;
+        }
+        else if (context.canceled)
+        {
+            DashInput = false;
+            DashInputStop = true;
+        }
+    }
 
+
+    //This method used for determine both attack direction and dash direction, only the name of method is "OnAttackDirection" but the method also work for Dash Direction
     public void OnAttackDirection(InputAction.CallbackContext context)
     {
         RawAttackDirectionInput = context.ReadValue<Vector2>();
         // RawAttackDirectionInput = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());;
+        // if(playerInput.currentControlScheme == "Keyboard")
+        // {
+        //     RawAttackDirectionInput = Camera.main.ScreenToWorldPoint((Vector3)RawAttackDirectionInput) - transform.position;
+        // }
         RawAttackDirectionInput = Camera.main.ScreenToWorldPoint((Vector3)RawAttackDirectionInput) - transform.position;
-        AttackDirectionInput = Vector2Int.RoundToInt(RawAttackDirectionInput.normalized);
+
+        // AttackDirectionInput = Vector2Int.RoundToInt(RawAttackDirectionInput.normalized);
+        AttackDirectionInput = RawAttackDirectionInput.normalized;
     }
+
+    public void OnDashDirection(InputAction.CallbackContext context)
+    {
+        RawDashDirectionInput = context.ReadValue<Vector2>();
+        RawDashDirectionInput = Camera.main.ScreenToWorldPoint((Vector3)RawDashDirectionInput) - transform.position;
+        // DashDirectionInput = Vector2Int.RoundToInt(RawDashDirectionInput.normalized);
+        DashDirectionInput = RawDashDirectionInput.normalized;
+    }
+
+    public void UsePrimaryAttackInput() => AttackInputs[(int)CombatInputs.primary] = false;
+    public void UseDashInput() => DashInput = false;
 
     public enum CombatInputs
     {

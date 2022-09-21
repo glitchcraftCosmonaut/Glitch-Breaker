@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CrosshairCursor : MonoBehaviour
 {
-    public PlayerInput input;
+    public PlayerInputHandler input;
     // Update is called once per frame
     void Update()
     {
