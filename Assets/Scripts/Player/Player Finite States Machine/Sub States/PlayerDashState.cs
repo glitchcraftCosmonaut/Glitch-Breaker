@@ -6,16 +6,16 @@ public class PlayerDashState : PlayerAbilityState
 {
     public bool CanDash { get; private set; }
 
-    private Vector2 dashDirection;
-    private Vector2 dashDirectionInput;
+    public Vector2 DashDirection {get; private set;}
+    public Vector2 DashDirectionInput {get; private set;}
+
 
     private float lastDashTime;
 
     private float velocityToSet;
 
-    private bool setVelocity;
+    // private bool setVelocity;
     private bool shouldCheckFlip;
-    private bool dashInputStop;
 
 
     public PlayerDashState(PlayerController player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
@@ -27,10 +27,7 @@ public class PlayerDashState : PlayerAbilityState
         base.Enter();
         CanDash = false;
         player.input.UseDashInput();
-        dashDirectionInput = player.input.DashDirectionInput;
-        dashDirection = dashDirectionInput;
-        setVelocity = false;
-        // dashDirection = Vector2.right * player.FacingDirection;
+        DashDirection = player.muzzleChild.position - player.transform.position;
         // if(attackCounter >= amountOfAttacks)
         // {
         //     attackCounter = 0;
@@ -43,7 +40,7 @@ public class PlayerDashState : PlayerAbilityState
     public override void Exit()
     {
         base.Exit();
-        // player.Anim.SetBool("Attack", false);
+        // DashDirectionInput = player.input.MoveInput;
         // attackCounter++;
     }
 
@@ -51,14 +48,25 @@ public class PlayerDashState : PlayerAbilityState
     {
         base.LogicUpdate();
         // dashDirectionInput = player.input.DashDirectionInput;
+        // DashDirection = DashDirectionInput;
+        // DashDirection = DashDirectionInput;
+        // DashDirectionInput = player.input.MoveInput;
         if(!isExitingState)
         {
-            if(dashDirectionInput != Vector2.zero || setVelocity)
+            DashDirectionInput = player.input.MoveInput;
+            if(DashDirectionInput != Vector2.zero)
             {
-                // dashDirection = dashDirectionInput;
-                dashDirection.Normalize();// This value is to determine the flip so it using normalize vector
-                player.CheckIfShouldFlip(Mathf.RoundToInt(dashDirection.x));
-                player.SetVelocity(player.dashSpeed, dashDirectionInput);
+                // player.CheckIfShouldFlip(Mathf.RoundToInt(dashDirection.x));
+                DashDirection = DashDirectionInput;
+                DashDirection.Normalize();
+                player.SetVelocity(velocityToSet, DashDirection);
+                player.playerRB.drag = player.drag; //Player rigid body using local drag variable
+                lastDashTime = Time.time; //to determine last time when the player using dash
+            }
+            else
+            {
+                DashDirection.Normalize();
+                player.SetVelocity(velocityToSet, DashDirection);
                 player.playerRB.drag = player.drag; //Player rigid body using local drag variable
                 lastDashTime = Time.time; //to determine last time when the player using dash
             }
@@ -79,8 +87,9 @@ public class PlayerDashState : PlayerAbilityState
     //Set the velocity workspace of the player according to dash speed varriable. state not gonna work if this method empty or not used
     public void SetPlayerVelocity(float velocity)
     {
+        player.SetVelocity(velocity, DashDirection);
         velocityToSet = velocity;
-        setVelocity = true;
+        // setVelocity = true;
     }
 
     public void SetFlipCheck(bool value)
@@ -122,6 +131,10 @@ public class PlayerDashState : PlayerAbilityState
         return CanDash && Time.time >= lastDashTime + player.dashCooldown;
     }
 
+    public Vector2 DashFacingDirection()
+    {
+        return DashDirectionInput = DashDirection;
+    }
     public void ResetCanDash() => CanDash = true;
 
     // public override void AnimationStartMovementTrigger()

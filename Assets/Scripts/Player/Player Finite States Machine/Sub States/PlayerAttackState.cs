@@ -14,7 +14,7 @@ public class PlayerAttackState : PlayerAbilityState
 
     private float velocityToSet;
 
-    private bool setVelocity;
+    // private bool setVelocity;
     private bool shouldCheckFlip;
 
     protected int attackCounter;
@@ -32,10 +32,9 @@ public class PlayerAttackState : PlayerAbilityState
     {
         base.Enter();
         player.input.UsePrimaryAttackInput();
-        attackDirectionInput = player.input.AttackDirectionInput;
-        attackDirection = attackDirectionInput;
+        attackDirection = Vector2.right * player.FacingDirection;
 
-        setVelocity = false;
+        // setVelocity = false;
         // attackDirection = Vector2.right * player.FacingDirection;
         if(attackCounter >= amountOfAttacks)
         {
@@ -65,14 +64,18 @@ public class PlayerAttackState : PlayerAbilityState
         // float angle = Mathf.Atan2(attackDirection.y, attackDirection.x) * Mathf.Rad2Deg;
         if(!isExitingState)
         {
+            attackDirectionInput = player.input.MoveInput;
             // attackDirectionInput = player.input.AttackDirectionInput;
-            if(attackDirectionInput != Vector2.zero || setVelocity)
+            if(attackDirectionInput != Vector2.zero)
             {
-                // attackDirection = attackDirectionInput;
+                attackDirection = attackDirectionInput;
                 attackDirection.Normalize();
-
-                player.CheckIfShouldFlip(Mathf.RoundToInt(attackDirection.x));
-                player.SetVelocity(player.attackDash, attackDirectionInput);
+                player.SetVelocity(velocityToSet, attackDirection);
+                player.playerRB.drag = player.drag;
+            }
+            else
+            {
+                player.SetVelocity(velocityToSet, attackDirection);
                 player.playerRB.drag = player.drag;
             }
             // if(setVelocity)
@@ -94,8 +97,9 @@ public class PlayerAttackState : PlayerAbilityState
     }
     public void SetPlayerVelocity(float velocity)
     {
+        player.SetVelocity(velocity, attackDirection);
         velocityToSet = velocity;
-        setVelocity = true;
+        // setVelocity = true;
     }
 
     public void SetFlipCheck(bool value)

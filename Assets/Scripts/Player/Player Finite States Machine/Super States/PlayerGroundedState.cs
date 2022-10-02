@@ -8,6 +8,9 @@ public class PlayerGroundedState : PlayerState
 {
     protected int xInput;
     protected int yInput;
+    protected float xInputFloat;
+    protected float yInputFloat;
+    
     protected int mouseInputX;
     private bool dashInput;
     
@@ -36,7 +39,10 @@ public class PlayerGroundedState : PlayerState
         base.LogicUpdate();
         xInput = player.input.NormInputX;
         yInput = player.input.NormInputY;
+        xInputFloat = player.input.MoveInput.x;
+        yInputFloat = player.input.MoveInput.y;
         dashInput = player.input.DashInput;
+        
         // mouseInputX = Mathf.FloorToInt(player.input.MousePos.x);
 
         if (player.input.AttackInputs[(int)CombatInputs.primary])

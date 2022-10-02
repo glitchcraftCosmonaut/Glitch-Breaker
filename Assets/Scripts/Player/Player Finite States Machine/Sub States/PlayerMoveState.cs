@@ -12,6 +12,7 @@ public class PlayerMoveState : PlayerGroundedState
     public override void Enter()
     {
         base.Enter();
+        
 
     }
 
@@ -29,10 +30,11 @@ public class PlayerMoveState : PlayerGroundedState
         player.CheckIfShouldFlip(xInput);
         if(!isAbilityDone)
         {
+          
             // player.CheckIfShouldFlipMousePos(mouseInputX);
             // player.CheckIfShouldFlip(xInput);
-            player.SetVelocityY(player.speed * yInput);
-            player.SetVelocityX(player.speed * xInput);
+            player.SetVelocityY(player.speed * yInputFloat);
+            player.SetVelocityX(player.speed * xInputFloat);
         }
         // if(!isAbilityDone)
         // {

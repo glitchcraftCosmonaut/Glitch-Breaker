@@ -22,6 +22,8 @@ public class PlayerController : MonoBehaviour
     public int FacingDirection {get; private set;}
     public Animator Anim { get; private set;}
 
+    public float Angle {get; private set;}
+
     //velocity
     public bool CanSetVelocity { get; set; }
 
@@ -29,6 +31,9 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 workspace;
 
+    
+    public Vector2 MovementStore  { get; private set; }
+    public Vector2 MovementDirection  { get; private set; }
 
     #endregion
     
@@ -42,14 +47,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float dashTime = 0.2f;
     [SerializeField] public GameObject projectile;
     [SerializeField] public Transform muzzle;
+    [SerializeField] public Transform muzzleChild;
     public float drag = 10f;
 
     private Vector3 targetPos;
 
     #endregion
 
-
-    protected int xInput;
     [HideInInspector] public Rigidbody2D playerRB;
     
 
@@ -90,6 +94,10 @@ public class PlayerController : MonoBehaviour
     
     private void Update() 
     {
+        AimAndShoot();
+        
+        MovementStore = MovementDirection;
+        MovementDirection = input.MoveInput;
         CurrentVelocity = playerRB.velocity;
         StateMachine.CurrentState.LogicUpdate();
         // PoolManager.Release(projectile, muzzle.position, Quaternion.identity);
@@ -176,23 +184,37 @@ public class PlayerController : MonoBehaviour
         // facingRight = !facingRight;
         // transform.Rotate(0f, 180f, 0f);
     }
-    // FIX THIS K
-    void Attack()
+
+    private void AimAndShoot()
     {
-        // targetPos = new Vector3(input.MousePos.x, input.MousePos.y, 0);
-        // transform.position = Vector2.MoveTowards(transform.position, targetPos, attackDash * 1 * Time.deltaTime);
-        // // Anim.SetTrigger("AttackDash"); //bug here mf
-        // if (input.MousePos.x > transform.position.x && FacingDirection == -1)
+        // Vector3 aim = new Vector3(0f, 0f, Mathf.Atan2(input.MoveInput.y, input.MoveInput.x) * Mathf.Rad2Deg);
+        // Vector3 aim = new Vector3(Mathf.Abs(input.MoveInput.x), input.MoveInput.y, 0f);
+        Vector3 aim = new Vector3(input.MoveInput.x, input.MoveInput.y, 0f);
+        if(input.MoveInput.magnitude > 0.01f)
+        {
+            Angle = Mathf.Atan2(input.MoveInput.y, input.MoveInput.x) * Mathf.Rad2Deg;
+            // muzzle.transform.rotation = Quaternion.Lerp (muzzle.transform.rotation, Quaternion.Euler 
+            //     (new Vector3 (0, 0, Angle)), Time.deltaTime * 10);
+            muzzle.transform.rotation = Quaternion.Euler(new Vector3(0f,0f, Angle));
+            // muzzle.transform.position = 
+            //     RotatePointAroundPivot(muzzle.transform.position,
+            //                 transform.position,
+            //                 Quaternion.Euler(new Vector3(0f,0f, Angle)));
+            // muzzle.transform.RotateAround(transform.position, aim, 2 * Time.deltaTime);
+        }
+        // if(aim.magnitude > 0.1f)
         // {
-        //     Flip();
-        // }
-        // else if (input.MousePos.x < transform.position.x && FacingDirection == 1)
-        // {
-        //     Flip();
+        //     aim.Normalize();
+        //     aim *= 0.4f;
+        //     muzzle.transform.localPosition = aim;
+        //     // transform.localPosition = aim;
         // }
     }
+    public static Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Quaternion angle)
+    {
+        return angle * ( point - pivot) + pivot;
+    }
     private void AnimationTrigger() => StateMachine.CurrentState.AnimationTrigger();
-
     private void AnimationFinishTrigger() => StateMachine.CurrentState.AnimationFinishTrigger();
     private void AnimationTurnOnFlipTigger() => StateMachine.CurrentState.AnimationTurnOnFlipTigger();
     private void AnimationTurnOffFlipTigger() => StateMachine.CurrentState.AnimationTurnOffFlipTrigger();

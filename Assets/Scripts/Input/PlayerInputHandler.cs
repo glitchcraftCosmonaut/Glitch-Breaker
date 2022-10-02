@@ -8,11 +8,11 @@ using System;
 // [CreateAssetMenu(menuName = "Player Input")]
 public class PlayerInputHandler : MonoBehaviour, InputActions.IGameplayActions
 {
-    private PlayerInput playerInput;
     private PlayerController player;
     public event UnityAction onAttack = delegate{};
     public event UnityAction onStopAttack = delegate{};
     public Vector2 MoveInput {get; private set;}
+    public Vector2 MoveInputDir {get; private set;}
     public Vector3 MousePos {get; private set;}
     public Vector2 MouseScreenPos {get; private set;}
     public Vector2 RawAttackDirectionInput { get; private set; }
@@ -51,10 +51,6 @@ public class PlayerInputHandler : MonoBehaviour, InputActions.IGameplayActions
         DisableAllInput();
 
     }
-    // private void Start()
-    // {
-    //     playerInput = GetComponent<PlayerInput>();
-    // }
 #endregion
 #region INPUT HANDLER
 
@@ -94,6 +90,7 @@ public class PlayerInputHandler : MonoBehaviour, InputActions.IGameplayActions
     public void OnMovement(InputAction.CallbackContext context)
     {
         MoveInput = context.ReadValue<Vector2>();
+        MoveInputDir = (Vector3)MoveInput.normalized;
         NormInputX = Mathf.RoundToInt(MoveInput.x);
         NormInputY = Mathf.RoundToInt(MoveInput.y);
        
@@ -138,7 +135,7 @@ public class PlayerInputHandler : MonoBehaviour, InputActions.IGameplayActions
         }
         else if (context.canceled)
         {
-            DashInput = false;
+            // DashInput = false;
             DashInputStop = true;
         }
     }
@@ -162,6 +159,10 @@ public class PlayerInputHandler : MonoBehaviour, InputActions.IGameplayActions
     public void OnDashDirection(InputAction.CallbackContext context)
     {
         RawDashDirectionInput = context.ReadValue<Vector2>();
+        // if(playerInput.currentControlScheme == "Keyboard")
+        // {
+        //     RawDashDirectionInput = Camera.main.ScreenToWorldPoint((Vector3)RawDashDirectionInput) - transform.position;
+        // }
         RawDashDirectionInput = Camera.main.ScreenToWorldPoint((Vector3)RawDashDirectionInput) - transform.position;
         // DashDirectionInput = Vector2Int.RoundToInt(RawDashDirectionInput.normalized);
         DashDirectionInput = RawDashDirectionInput.normalized;

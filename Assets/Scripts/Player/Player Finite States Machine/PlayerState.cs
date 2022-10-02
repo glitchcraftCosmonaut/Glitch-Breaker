@@ -15,6 +15,7 @@ public class PlayerState
     private string animBoolName;
 
 
+
     public PlayerState( PlayerController player, PlayerStateMachine stateMachine, string animBoolName)
     {
         this.player = player;
