@@ -1,18 +1,19 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerProjectile : Projectile
+public class EnemyProjectile : Projectile
 {
-    // private SpriteRenderer spriteRender;
-    private PlayerController player;
+    private Agent agent;
 
     protected virtual void Awake()
     {
-        player = FindObjectOfType<PlayerController>();
+        agent = FindObjectOfType<Agent>();
         
     }
     private void Update() 
     {
-        float angle = player.Angle;
+        float angle = agent.Angle;
         if (angle < 89 && angle > -89)
         {
             transform.localScale = new Vector3(1f,1f,1f);
@@ -22,5 +23,4 @@ public class PlayerProjectile : Projectile
             transform.localScale = new Vector3(1f,-1f,1f);
         }
     }
-    
 }

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4376230384129952211}
   - component: {fileID: 4376230384129952212}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: Slash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -70,9 +70,9 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 3
   m_Sprite: {fileID: -6902134593718455666, guid: 865aa05deadd7a343aa166262dfc5c36, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.8441375, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -93,10 +93,10 @@ GameObject:
   - component: {fileID: 4376230385047232205}
   - component: {fileID: 4376230385047232206}
   - component: {fileID: 366895104235050857}
-  - component: {fileID: 4376230385047232207}
+  - component: {fileID: 5202045187645918116}
   - component: {fileID: 4376230385047232204}
-  m_Layer: 7
-  m_Name: Primary Attack 1
+  m_Layer: 9
+  m_Name: Enemy Primary Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -114,7 +114,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4376230384129952211}
-  - {fileID: 7382551900520852400}
+  - {fileID: 2149087838315512384}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -167,7 +167,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &4376230385047232207
+--- !u!114 &5202045187645918116
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -176,10 +176,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4376230385047232203}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54c63570d47e11d41bab9dc667a66604, type: 3}
+  m_Script: {fileID: 11500000, guid: c9ea07ae2204cc943a19552600c4650e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitVFX: {fileID: 5060298685065931927, guid: 820fc9ea89e4fe94ba8ea095b2098629, type: 3}
+  hitVFX: {fileID: 4801493125213720806, guid: 57abafaf381b50044bd5af64897aeb85, type: 3}
   damage: 3
   moveSpeed: 8
   moveDirection: {x: 1, y: 0}
@@ -197,7 +197,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyGameObject: 0
   lifeTime: 0.25
---- !u!1 &9203707953145562150
+--- !u!1 &6192836695845087150
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -205,21 +205,21 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7382551900520852400}
-  m_Layer: 7
+  - component: {fileID: 2149087838315512384}
+  m_Layer: 9
   m_Name: Circle Origin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7382551900520852400
+--- !u!4 &2149087838315512384
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9203707953145562150}
+  m_GameObject: {fileID: 6192836695845087150}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.85, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}

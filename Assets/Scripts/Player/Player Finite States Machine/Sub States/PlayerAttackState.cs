@@ -32,7 +32,7 @@ public class PlayerAttackState : PlayerAbilityState
     {
         base.Enter();
         player.input.UsePrimaryAttackInput();
-        attackDirection = Vector2.right * player.FacingDirection;
+        attackDirection = player.muzzleChild.position - player.transform.position;
 
         // setVelocity = false;
         // attackDirection = Vector2.right * player.FacingDirection;
@@ -78,12 +78,6 @@ public class PlayerAttackState : PlayerAbilityState
                 player.SetVelocity(velocityToSet, attackDirection);
                 player.playerRB.drag = player.drag;
             }
-            // if(setVelocity)
-            // {
-            //     attackDirectionInput.Normalize();
-            //     player.SetVelocity(player.attackDash, attackDirectionInput);
-            //     player.playerRB.drag = player.drag;
-            // }
         }
     }
 

@@ -5,7 +5,7 @@ using static PlayerInputHandler;
 using UnityEngine.InputSystem;
 
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Character
 {
     #region states
 
@@ -30,10 +30,6 @@ public class PlayerController : MonoBehaviour
     public Vector2 CurrentVelocity { get; private set; }
 
     private Vector2 workspace;
-
-    
-    public Vector2 MovementStore  { get; private set; }
-    public Vector2 MovementDirection  { get; private set; }
 
     #endregion
     
@@ -64,6 +60,8 @@ public class PlayerController : MonoBehaviour
         input = GetComponent<PlayerInputHandler>();
         playerRB = GetComponent<Rigidbody2D>();
         Anim = GetComponent<Animator>();
+        sp = GetComponent<SpriteRenderer>();
+        defaultMat2D = GetComponent<SpriteRenderer>().material;
         FacingDirection = 1;
         CanSetVelocity = true;
 
@@ -75,17 +73,19 @@ public class PlayerController : MonoBehaviour
         DashState = new PlayerDashState (this, StateMachine, "Dash");
         #endregion
     }
-    private void OnEnable()
+    protected override void OnEnable()
     {
         // playerInput.Enable();
         // input.onAttack += Attack;
+        base.OnEnable();
+        sp.material = defaultMat2D;
     }
-    private void OnDisable()
-    {
-        // playerInput.Disable();
-        // input.onAttack -= Attack;
+    // private void OnDisable()
+    // {
+    //     // playerInput.Disable();
+    //     // input.onAttack -= Attack;
 
-    }
+    // }
     private void Start()
     {
         input.EnableGameplayInput();
@@ -96,14 +96,8 @@ public class PlayerController : MonoBehaviour
     {
         AimAndShoot();
         
-        MovementStore = MovementDirection;
-        MovementDirection = input.MoveInput;
         CurrentVelocity = playerRB.velocity;
         StateMachine.CurrentState.LogicUpdate();
-        // PoolManager.Release(projectile, muzzle.position, Quaternion.identity);
-
- 
-        // }
     }
 
     private void FixedUpdate()
@@ -132,7 +126,7 @@ public class PlayerController : MonoBehaviour
             Flip();
         }
     }
-     public void SetVelocityZero()
+    public void SetVelocityZero()
     {
         workspace = Vector2.zero;        
         SetFinalVelocity();
@@ -181,38 +175,46 @@ public class PlayerController : MonoBehaviour
     {
         FacingDirection *= -1;
         playerRB.transform.Rotate(0.0f, 180f, 0.0f);
-        // facingRight = !facingRight;
-        // transform.Rotate(0f, 180f, 0f);
     }
 
     private void AimAndShoot()
     {
-        // Vector3 aim = new Vector3(0f, 0f, Mathf.Atan2(input.MoveInput.y, input.MoveInput.x) * Mathf.Rad2Deg);
-        // Vector3 aim = new Vector3(Mathf.Abs(input.MoveInput.x), input.MoveInput.y, 0f);
         Vector3 aim = new Vector3(input.MoveInput.x, input.MoveInput.y, 0f);
         if(input.MoveInput.magnitude > 0.01f)
         {
             Angle = Mathf.Atan2(input.MoveInput.y, input.MoveInput.x) * Mathf.Rad2Deg;
-            // muzzle.transform.rotation = Quaternion.Lerp (muzzle.transform.rotation, Quaternion.Euler 
-            //     (new Vector3 (0, 0, Angle)), Time.deltaTime * 10);
             muzzle.transform.rotation = Quaternion.Euler(new Vector3(0f,0f, Angle));
-            // muzzle.transform.position = 
-            //     RotatePointAroundPivot(muzzle.transform.position,
-            //                 transform.position,
-            //                 Quaternion.Euler(new Vector3(0f,0f, Angle)));
-            // muzzle.transform.RotateAround(transform.position, aim, 2 * Time.deltaTime);
         }
-        // if(aim.magnitude > 0.1f)
+    }
+
+    public override void TakeDamage(float damage)
+    {
+        // StartCoroutine(HurtEffect());
+        base.TakeDamage(damage);
+        // PowerDown();
+        // statsbar_HUD.UpdateStates(health, maxHealth);
+        // TimeController.Instance.BulletTime(slowMotionDuration);
+        // if(gameObject.activeSelf)
         // {
-        //     aim.Normalize();
-        //     aim *= 0.4f;
-        //     muzzle.transform.localPosition = aim;
-        //     // transform.localPosition = aim;
+        //     Move(moveDirection);
+        //     StartCoroutine(InvincibleCoroutine());
+        //     if(regenerateHealth)
+        //     {
+        //         if(healthRegenerateCoroutine != null)
+        //         {
+        //             StopCoroutine(healthRegenerateCoroutine);
+        //         }
+        //         healthRegenerateCoroutine = StartCoroutine(HealthRegenerationCoroutine(waitHealthRegenerateTime, healthRegeneratePercent));
+        //     }
         // }
     }
-    public static Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Quaternion angle)
+    public override void Die()
     {
-        return angle * ( point - pivot) + pivot;
+        // GameManager.onGameOver?.Invoke();
+        // GameManager.GameState = GameState.GameOver;
+        // statsbar_HUD.UpdateStates(0f, maxHealth);
+        // StopCoroutine(HurtEffect());
+        base.Die();
     }
     private void AnimationTrigger() => StateMachine.CurrentState.AnimationTrigger();
     private void AnimationFinishTrigger() => StateMachine.CurrentState.AnimationFinishTrigger();
