@@ -41,6 +41,10 @@ public class Character : MonoBehaviour
         }
         
     }
+    public Vector3 GetPosition() 
+    {
+        return transform.position;
+    }
 
     public virtual void Die()
     {

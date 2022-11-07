@@ -35,7 +35,7 @@ public class PlayerController : Character
     
     #region Player Data
     // private InputActions playerInput;
-    [HideInInspector] public PlayerInputHandler input;
+    [SerializeField] public PlayerInputHandler input;
     [SerializeField] public float speed = 10f;
     [SerializeField] public float attackDash = 10f;
     [SerializeField] public float dashSpeed = 10f;
@@ -44,6 +44,8 @@ public class PlayerController : Character
     [SerializeField] public GameObject projectile;
     [SerializeField] public Transform muzzle;
     [SerializeField] public Transform muzzleChild;
+    [SerializeField] public GameObject dashAfterImage;
+    [SerializeField] public float distBetweenAfterImages = 0.5f;
     public float drag = 10f;
 
     private Vector3 targetPos;
@@ -57,7 +59,7 @@ public class PlayerController : Character
     private void Awake() 
     {
         // playerInput = new InputActions();
-        input = GetComponent<PlayerInputHandler>();
+        // input = GetComponent<PlayerInputHandler>();
         playerRB = GetComponent<Rigidbody2D>();
         Anim = GetComponent<Animator>();
         sp = GetComponent<SpriteRenderer>();

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerAbilityState : PlayerState
 {
+    protected float nextSpawnDirtTime;
     public PlayerAbilityState(PlayerController player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }

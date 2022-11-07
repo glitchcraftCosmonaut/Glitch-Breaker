@@ -5,8 +5,8 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using System;
 
-// [CreateAssetMenu(menuName = "Player Input")]
-public class PlayerInputHandler : MonoBehaviour, InputActions.IGameplayActions
+[CreateAssetMenu(menuName = "Player Input")]
+public class PlayerInputHandler : ScriptableObject, InputActions.IGameplayActions
 {
     private PlayerController player;
     public event UnityAction onAttack = delegate{};
@@ -150,7 +150,7 @@ public class PlayerInputHandler : MonoBehaviour, InputActions.IGameplayActions
         // {
         //     RawAttackDirectionInput = Camera.main.ScreenToWorldPoint((Vector3)RawAttackDirectionInput) - transform.position;
         // }
-        RawAttackDirectionInput = Camera.main.ScreenToWorldPoint((Vector3)RawAttackDirectionInput) - transform.position;
+        // RawAttackDirectionInput = Camera.main.ScreenToWorldPoint((Vector3)RawAttackDirectionInput) - transform.position;
 
         // AttackDirectionInput = Vector2Int.RoundToInt(RawAttackDirectionInput.normalized);
         AttackDirectionInput = RawAttackDirectionInput.normalized;
@@ -163,7 +163,7 @@ public class PlayerInputHandler : MonoBehaviour, InputActions.IGameplayActions
         // {
         //     RawDashDirectionInput = Camera.main.ScreenToWorldPoint((Vector3)RawDashDirectionInput) - transform.position;
         // }
-        RawDashDirectionInput = Camera.main.ScreenToWorldPoint((Vector3)RawDashDirectionInput) - transform.position;
+        // RawDashDirectionInput = Camera.main.ScreenToWorldPoint((Vector3)RawDashDirectionInput) - transform.position;
         // DashDirectionInput = Vector2Int.RoundToInt(RawDashDirectionInput.normalized);
         DashDirectionInput = RawDashDirectionInput.normalized;
     }

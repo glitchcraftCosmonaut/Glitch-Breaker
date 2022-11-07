@@ -13,6 +13,7 @@ public class PlayerDashState : PlayerAbilityState
     private float lastDashTime;
 
     private float velocityToSet;
+    private Vector2 lastAIPos;
 
     // private bool setVelocity;
     private bool shouldCheckFlip;
@@ -54,6 +55,11 @@ public class PlayerDashState : PlayerAbilityState
         if(!isExitingState)
         {
             DashDirectionInput = player.input.MoveInput;
+            if (Time.time >= nextSpawnDirtTime) 
+            {
+                DirtParticleSystemHandler.Instance.SpawnDirt(player.GetPosition() + new Vector3(0, -0.52f), GetMoveDir() * -1f);
+                nextSpawnDirtTime = Time.time + .08f;
+            }
             if(DashDirectionInput != Vector2.zero)
             {
                 // player.CheckIfShouldFlip(Mathf.RoundToInt(dashDirection.x));
@@ -62,13 +68,16 @@ public class PlayerDashState : PlayerAbilityState
                 player.SetVelocity(velocityToSet, DashDirection);
                 player.playerRB.drag = player.drag; //Player rigid body using local drag variable
                 lastDashTime = Time.time; //to determine last time when the player using dash
+                PlaceAfterImage();
             }
             else
             {
                 DashDirection.Normalize();
                 player.SetVelocity(velocityToSet, DashDirection);
+                // CheckIfShouldPlaceAfterImage();
                 player.playerRB.drag = player.drag; //Player rigid body using local drag variable
                 lastDashTime = Time.time; //to determine last time when the player using dash
+                PlaceAfterImage();
             }
         }
     }
@@ -125,10 +134,29 @@ public class PlayerDashState : PlayerAbilityState
     {
         SetPlayerVelocity(0f);
     }
+    private void CheckIfShouldPlaceAfterImage()
+    {
+        if(Vector2.Distance(player.transform.position, lastAIPos) >= player.distBetweenAfterImages)
+        {
+            PlaceAfterImage();
+        }
+    }
+
+    private void PlaceAfterImage()
+    {
+        // PlayerAfterImagePool.Instance.GetFromPool();
+        // DashParticleSystem.Instance.SpawnDirt(player.GetPosition(), GetMoveDir() * -1f);
+        PoolManager.Release(player.dashAfterImage, player.transform.position, player.transform.rotation);
+        lastAIPos = player.transform.position;
+    }
 
     public bool CheckIfCanDash()
     {
         return CanDash && Time.time >= lastDashTime + player.dashCooldown;
+    }
+    public Vector3 GetMoveDir() 
+    {
+        return DashDirection;
     }
 
     public Vector2 DashFacingDirection()

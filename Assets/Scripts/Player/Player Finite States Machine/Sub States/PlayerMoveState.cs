@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerMoveState : PlayerGroundedState
 {
+    private float nextSpawnDirtTime;
     public PlayerMoveState(PlayerController player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
@@ -35,6 +36,11 @@ public class PlayerMoveState : PlayerGroundedState
             // player.CheckIfShouldFlip(xInput);
             player.SetVelocityY(player.speed * yInputFloat);
             player.SetVelocityX(player.speed * xInputFloat);
+            if (Time.time >= nextSpawnDirtTime) 
+            {
+                DirtParticleSystemHandler.Instance.SpawnDirt(player.GetPosition() + new Vector3(0, -0.52f), GetMoveDir() * -1f);
+                nextSpawnDirtTime = Time.time + .08f;
+            }
         }
         // if(!isAbilityDone)
         // {

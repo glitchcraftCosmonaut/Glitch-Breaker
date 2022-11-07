@@ -39,8 +39,8 @@ public class PlayerGroundedState : PlayerState
         base.LogicUpdate();
         xInput = player.input.NormInputX;
         yInput = player.input.NormInputY;
-        xInputFloat = player.input.MoveInput.x;
-        yInputFloat = player.input.MoveInput.y;
+        xInputFloat = player.input.MoveInputDir.x;
+        yInputFloat = player.input.MoveInputDir.y;
         dashInput = player.input.DashInput;
         
         // mouseInputX = Mathf.FloorToInt(player.input.MousePos.x);
@@ -55,6 +55,11 @@ public class PlayerGroundedState : PlayerState
         {
             stateMachine.ChangeState(player.DashState);
         }
+    }
+
+    public Vector3 GetMoveDir() 
+    {
+        return player.input.MoveInputDir;
     }
 
     public override void PhysicsUpdate()

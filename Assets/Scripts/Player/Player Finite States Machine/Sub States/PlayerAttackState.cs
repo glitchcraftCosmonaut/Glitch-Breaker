@@ -64,6 +64,11 @@ public class PlayerAttackState : PlayerAbilityState
         // float angle = Mathf.Atan2(attackDirection.y, attackDirection.x) * Mathf.Rad2Deg;
         if(!isExitingState)
         {
+                if (Time.time >= nextSpawnDirtTime) 
+            {
+                DirtParticleSystemHandler.Instance.SpawnDirt(player.GetPosition() + new Vector3(0, -0.52f), GetMoveDir() * -1f);
+                nextSpawnDirtTime = Time.time + .08f;
+            }
             attackDirectionInput = player.input.MoveInput;
             // attackDirectionInput = player.input.AttackDirectionInput;
             if(attackDirectionInput != Vector2.zero)
@@ -79,6 +84,10 @@ public class PlayerAttackState : PlayerAbilityState
                 player.playerRB.drag = player.drag;
             }
         }
+    }
+    public Vector3 GetMoveDir() 
+    {
+        return attackDirection;
     }
 
     public override void PhysicsUpdate()

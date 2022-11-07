@@ -9,7 +9,7 @@ public class EnemyAI : MonoBehaviour
     // private Transform player;
 
     [SerializeField]
-    private List<SteeringBehaviour> steeringBehaviours;
+    public List<SteeringBehaviour> steeringBehaviours;
 
     [SerializeField]
     private List<Detector> detectors;
@@ -22,18 +22,18 @@ public class EnemyAI : MonoBehaviour
 
     [SerializeField]
     private float attackDistance = 0.5f;
-    [SerializeField]
-    private float dashSpeed = 5f;
 
     //Inputs sent from the Enemy AI to the Enemy controller
     public UnityEvent OnAttackPressed;
-    public UnityEvent<Vector2> OnMovementInput, OnPointerInput;
+    public UnityEvent<Vector2> OnMovementInput, OnPointerInput, OnDashDirectionInput;
 
     [SerializeField]
     private Vector2 movementInput;
+    [SerializeField]
+    public Vector2 dashDirectionInput;
 
     [SerializeField]
-    private ContextSolver movementDirectionSolver;
+    public ContextSolver movementDirectionSolver;
     public float distance;
 
     bool following = false;
@@ -48,6 +48,7 @@ public class EnemyAI : MonoBehaviour
     {
         //Detecting Player and Obstacles around
         InvokeRepeating("PerformDetection", 0, detectionDelay);
+        // dashDirectionInput = transform.position - aiData.currentTarget.position;
     }
 
     private void PerformDetection()
@@ -78,6 +79,9 @@ public class EnemyAI : MonoBehaviour
         }
         //Moving the Agent
         OnMovementInput?.Invoke(movementInput);
+
+        //dashing input
+        OnDashDirectionInput?.Invoke(dashDirectionInput);
     }
 
     private IEnumerator ChaseAndAttack()
@@ -87,6 +91,7 @@ public class EnemyAI : MonoBehaviour
             //Stopping Logic
             Debug.Log("Stopping");
             movementInput = Vector2.zero;
+            dashDirectionInput = Vector2.zero;
             following = false;
             yield break;
         }
@@ -97,27 +102,22 @@ public class EnemyAI : MonoBehaviour
             if (distance < attackDistance)
             {
                 //Attack logic
-                
-                // movementInput = rb.velocity * dashSpeed;
-                // movementInput = Vector2.MoveTowards(transform.position, player.position, dashSpeed * Time.deltaTime);
+                // movementInput = Vector2.zero;
+                // movementInput = direction.normalized;
+                // transform.Translate(direction * 5 * Time.deltaTime);
                 movementInput = Vector2.zero;
+                // yield return new WaitForSeconds(1f);
                 OnAttackPressed?.Invoke();
-                
-                // movementInput = movementDirectionSolver.GetDirectionToMove(steeringBehaviours, aiData);
-                // // movementInput = movementDirectionSolver.GetDirectionToMove(steeringBehaviours, aiData);
-                // if(aiData.currentTarget == aiData.targets[0])
-                // {
-                //     movementInput = aiData.currentTarget.position - transform.position;
-                // }
-                // movementInput = (player.position - transform.position).normalized;
                 yield return new WaitForSeconds(attackDelay);
+                dashDirectionInput = Vector2.zero;
                 StartCoroutine(ChaseAndAttack());
             }
             else
             {
                 //Chase logic
                 movementInput = movementDirectionSolver.GetDirectionToMove(steeringBehaviours, aiData);
-                rb.drag = 0f;
+                dashDirectionInput = Vector2.zero;
+                rb.drag = 1f;
                 yield return new WaitForSeconds(aiUpdateDelay);
                 StartCoroutine(ChaseAndAttack());
             }

@@ -4,14 +4,19 @@ using UnityEngine;
 
 public class AgentMover : MonoBehaviour
 {
-    public Rigidbody2D rb2d;
+    public Rigidbody2D RB2D {get; private set;}
+    [SerializeField]
+    public Transform muzzleChild;
 
     [SerializeField]
-    private float maxSpeed = 2, acceleration = 50, deacceleration = 100;
-    [SerializeField]
-    private float currentSpeed = 0;
-    private Vector2 oldMovementInput;
+    private float maxSpeed = 2, dashSpeed = 5;
+
+    
+    // [SerializeField]
+    // private float currentSpeed = 0;
+    // private Vector2 oldMovementInput;
     public Vector2 MovementInput { get; set; }
+    public Vector2 DashDirectionInput { get; set; }
 
     public bool CanSetVelocity { get; set; }
     public Vector2 CurrentVelocity { get; private set; }
@@ -21,14 +26,24 @@ public class AgentMover : MonoBehaviour
 
     private void Awake()
     {
-        rb2d = GetComponent<Rigidbody2D>();
+        RB2D = GetComponent<Rigidbody2D>();
         CanSetVelocity = true;
     }
 
     private void Update()
     {
-        SetVelocityY(maxSpeed * MovementInput.y);
-        SetVelocityX(maxSpeed * MovementInput.x);
+
+        if(MovementInput != Vector2.zero)
+        {
+            SetVelocityY(maxSpeed * MovementInput.y);
+            SetVelocityX(maxSpeed * MovementInput.x);
+ 
+        }
+        else if(MovementInput == Vector2.zero)
+        {
+            SetVelocityY(dashSpeed * DashDirectionInput.y);
+            SetVelocityX(dashSpeed * DashDirectionInput.x);
+        }
     }
 
     private void FixedUpdate()
@@ -89,7 +104,7 @@ public class AgentMover : MonoBehaviour
     {
         if (CanSetVelocity)
         {
-            rb2d.velocity = workspace;
+            RB2D.velocity = workspace;
             CurrentVelocity = workspace;
         }        
     }

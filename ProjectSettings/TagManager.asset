@@ -16,8 +16,8 @@ TagManager:
   - Enemy
   - EnemyProjectile
   - Obstacle
-  - 
-  - 
+  - Ground
+  - Ground Border
   - 
   - 
   - 
