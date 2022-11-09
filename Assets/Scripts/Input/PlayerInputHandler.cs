@@ -6,11 +6,17 @@ using UnityEngine.InputSystem;
 using System;
 
 [CreateAssetMenu(menuName = "Player Input")]
-public class PlayerInputHandler : ScriptableObject, InputActions.IGameplayActions
+public class PlayerInputHandler : ScriptableObject, InputActions.IGameplayActions, InputActions.IPauseMenuActions, InputActions.IGameOverScreenActions
 {
     private PlayerController player;
     public event UnityAction onAttack = delegate{};
     public event UnityAction onStopAttack = delegate{};
+    public event UnityAction onPause = delegate {};
+    public event UnityAction onUnpause = delegate {};
+    public event UnityAction onConfirmGameOver = delegate {};
+
+
+
     public Vector2 MoveInput {get; private set;}
     public Vector2 MoveInputDir {get; private set;}
     public Vector3 MousePos {get; private set;}
@@ -39,6 +45,8 @@ public class PlayerInputHandler : ScriptableObject, InputActions.IGameplayAction
         // playerInput = new PlayerInput();
 
         inputActions.Gameplay.SetCallbacks(this);
+        inputActions.PauseMenu.SetCallbacks(this);
+        inputActions.GameOverScreen.SetCallbacks(this);
         int count = Enum.GetValues(typeof(CombatInputs)).Length;
         AttackInputs = new bool[count];
 
@@ -58,26 +66,29 @@ public class PlayerInputHandler : ScriptableObject, InputActions.IGameplayAction
     {
         inputActions.Disable();
         actionMap.Enable();
-        Cursor.visible = false;
 
 
-        // if(isUIInput)
-        // {
-        //     Cursor.visible = true;
-        //     // Cursor.lockState = CursorLockMode.None;
-        // }
-        // else
-        // {
-        //     Cursor.visible = false;
-        //     // Cursor.lockState = CursorLockMode.Locked;
-        // }
+        if(isUIInput)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
     public void SwitchToDynamicUpdateMode() => InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsInDynamicUpdate;
     public void SwitchToFixedUpdateMode() => InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsInFixedUpdate;
+
     public void DisableAllInput() => inputActions.Disable();
 
     public void EnableGameplayInput() => SwitchActionMap(inputActions.Gameplay, false);
-    // public void EnablePauseInput() => SwitchActionMap(inputActions.PauseMenu, true);
+
+    public void EnablePauseInput() => SwitchActionMap(inputActions.PauseMenu, true);
+    
+    public void EnableGameOverScreenInput() => SwitchActionMap(inputActions.GameOverScreen, false);
     
 #endregion
    
@@ -94,6 +105,30 @@ public class PlayerInputHandler : ScriptableObject, InputActions.IGameplayAction
         NormInputX = Mathf.RoundToInt(MoveInput.x);
         NormInputY = Mathf.RoundToInt(MoveInput.y);
        
+    }
+
+    public void OnPause(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            onPause.Invoke();
+        }
+    }
+
+    public void OnUnPause(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            onUnpause.Invoke();
+        }
+    }
+
+    public void OnConfirmGameOver(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            onConfirmGameOver.Invoke();
+        }
     }
 
     public void OnAttack(InputAction.CallbackContext context)

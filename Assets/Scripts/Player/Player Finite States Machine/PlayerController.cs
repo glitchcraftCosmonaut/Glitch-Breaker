@@ -35,6 +35,12 @@ public class PlayerController : Character
     
     #region Player Data
     // private InputActions playerInput;
+    [SerializeField] Statsbar_HUD statsbar_HUD;
+    [SerializeField] bool regenerateHealth = true;
+    [SerializeField] float healthRegenerateTime;
+    [SerializeField,Range(0f, 1f)] float healthRegeneratePercent;
+
+
     [SerializeField] public PlayerInputHandler input;
     [SerializeField] public float speed = 10f;
     [SerializeField] public float attackDash = 10f;
@@ -46,13 +52,23 @@ public class PlayerController : Character
     [SerializeField] public Transform muzzleChild;
     [SerializeField] public GameObject dashAfterImage;
     [SerializeField] public float distBetweenAfterImages = 0.5f;
+
+    public AudioData slashSFX;
+    [HideInInspector] public Rigidbody2D playerRB;
+    // new Collider2D collider;
     public float drag = 10f;
 
     private Vector3 targetPos;
 
+    // readonly float InvincibleTime = 1f;
+
+    WaitForSeconds waitHealthRegenerateTime;
+    // WaitForSeconds waitInvincibleTime;
+
+    Coroutine healthRegenerateCoroutine;
+
     #endregion
 
-    [HideInInspector] public Rigidbody2D playerRB;
     
 
     
@@ -61,6 +77,7 @@ public class PlayerController : Character
         // playerInput = new InputActions();
         // input = GetComponent<PlayerInputHandler>();
         playerRB = GetComponent<Rigidbody2D>();
+        // collider = GetComponent<Collider2D>();
         Anim = GetComponent<Animator>();
         sp = GetComponent<SpriteRenderer>();
         defaultMat2D = GetComponent<SpriteRenderer>().material;
@@ -74,6 +91,9 @@ public class PlayerController : Character
         PrimaryAttack = new PlayerAttackState (this, StateMachine, "Attack");
         DashState = new PlayerDashState (this, StateMachine, "Dash");
         #endregion
+
+        waitHealthRegenerateTime = new WaitForSeconds(healthRegenerateTime);
+        // waitInvincibleTime = new WaitForSeconds(InvincibleTime);
     }
     protected override void OnEnable()
     {
@@ -90,6 +110,7 @@ public class PlayerController : Character
     // }
     private void Start()
     {
+        statsbar_HUD.Initialize(health,maxHealth);
         input.EnableGameplayInput();
         StateMachine.Initialize(IdleState);
     }
@@ -189,32 +210,50 @@ public class PlayerController : Character
         }
     }
 
+    public override void RestoreHealth(float value)
+    {
+        base.RestoreHealth(value);
+        statsbar_HUD.UpdateStates(health, maxHealth);
+    }
+
     public override void TakeDamage(float damage)
     {
         // StartCoroutine(HurtEffect());
         base.TakeDamage(damage);
+        CinemachineShake.Instance.ShakeCamera(2f, 0.1f);
+        TimeController.Instance.Stop(0.1f);
         // PowerDown();
-        // statsbar_HUD.UpdateStates(health, maxHealth);
+        statsbar_HUD.UpdateStates(health, maxHealth);
+        statsbar_HUD.animator.SetTrigger("TakeDamage");
         // TimeController.Instance.BulletTime(slowMotionDuration);
-        // if(gameObject.activeSelf)
-        // {
-        //     Move(moveDirection);
-        //     StartCoroutine(InvincibleCoroutine());
-        //     if(regenerateHealth)
-        //     {
-        //         if(healthRegenerateCoroutine != null)
-        //         {
-        //             StopCoroutine(healthRegenerateCoroutine);
-        //         }
-        //         healthRegenerateCoroutine = StartCoroutine(HealthRegenerationCoroutine(waitHealthRegenerateTime, healthRegeneratePercent));
-        //     }
-        // }
+        if(gameObject.activeSelf)
+        {
+            // Move(moveDirection);
+            // StartCoroutine(InvincibleCoroutine());
+            if(regenerateHealth)
+            {
+                if(healthRegenerateCoroutine != null)
+                {
+                    StopCoroutine(healthRegenerateCoroutine);
+                }
+                healthRegenerateCoroutine = StartCoroutine(HealthRegenerationCoroutine(waitHealthRegenerateTime, healthRegeneratePercent));
+            }
+        }
     }
+
+    // IEnumerator InvincibleCoroutine()
+    // {
+    //     collider.isTrigger = true;
+
+    //     yield return waitInvincibleTime;
+
+    //     collider.isTrigger = false;
+    // }
     public override void Die()
     {
-        // GameManager.onGameOver?.Invoke();
-        // GameManager.GameState = GameState.GameOver;
-        // statsbar_HUD.UpdateStates(0f, maxHealth);
+        GameManager.onGameOver?.Invoke();
+        GameManager.GameState = GameState.GameOver;
+        statsbar_HUD.UpdateStates(0f, maxHealth);
         // StopCoroutine(HurtEffect());
         base.Die();
     }

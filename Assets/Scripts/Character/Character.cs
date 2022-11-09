@@ -9,6 +9,7 @@ public class Character : MonoBehaviour
 
     [Header("===Material===")]
     [SerializeField] protected Material hurtMat;
+    [SerializeField] protected GameObject deathFX;
     protected SpriteRenderer sp;
     protected Material defaultMat2D;
     

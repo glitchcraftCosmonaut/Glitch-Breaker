@@ -9,14 +9,15 @@ public class AgentMover : MonoBehaviour
     public Transform muzzleChild;
 
     [SerializeField]
-    private float maxSpeed = 2, dashSpeed = 5;
+    private float maxSpeed = 2;
+    // , dashSpeed = 5;
 
     
     // [SerializeField]
     // private float currentSpeed = 0;
     // private Vector2 oldMovementInput;
     public Vector2 MovementInput { get; set; }
-    public Vector2 DashDirectionInput { get; set; }
+    // public Vector2 DashDirectionInput { get; set; }
 
     public bool CanSetVelocity { get; set; }
     public Vector2 CurrentVelocity { get; private set; }
@@ -32,18 +33,22 @@ public class AgentMover : MonoBehaviour
 
     private void Update()
     {
+        SetVelocityY(maxSpeed * MovementInput.y);
+        SetVelocityX(maxSpeed * MovementInput.x);
 
-        if(MovementInput != Vector2.zero)
-        {
-            SetVelocityY(maxSpeed * MovementInput.y);
-            SetVelocityX(maxSpeed * MovementInput.x);
+        //below is for dash attack
+
+        // if(MovementInput != Vector2.zero)
+        // {
+        //     SetVelocityY(maxSpeed * MovementInput.y);
+        //     SetVelocityX(maxSpeed * MovementInput.x);
  
-        }
-        else if(MovementInput == Vector2.zero)
-        {
-            SetVelocityY(dashSpeed * DashDirectionInput.y);
-            SetVelocityX(dashSpeed * DashDirectionInput.x);
-        }
+        // }
+        // else if(MovementInput == Vector2.zero)
+        // {
+        //     SetVelocityY(dashSpeed * DashDirectionInput.y);
+        //     SetVelocityX(dashSpeed * DashDirectionInput.x);
+        // }
     }
 
     private void FixedUpdate()

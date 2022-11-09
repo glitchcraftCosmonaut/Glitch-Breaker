@@ -19,7 +19,7 @@ public class Statsbar : MonoBehaviour
     Coroutine bufferedFillCoroutine;
     Canvas canvas;
 
-    private void Awake() 
+    public virtual void Awake() 
     {
         if(TryGetComponent<Canvas>(out Canvas canvas))
         {

@@ -184,7 +184,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   damage: 3
-  moveSpeed: 6
+  moveSpeed: 0
   moveDirection: {x: 1, y: 0}
 --- !u!114 &4376230385047232204
 MonoBehaviour:

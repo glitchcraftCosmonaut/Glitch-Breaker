@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Agent : Character
 {
+    [SerializeField] int scorePoint = 100;
     [SerializeField] public Transform muzzle;
     [SerializeField] public Transform muzzleChild;
 
@@ -12,11 +13,11 @@ public class Agent : Character
 
     private WeaponParent weaponParent;
 
-    private Vector2 pointerInput, movementInput, dashDirectionInput;
+    private Vector2 pointerInput, movementInput, attackDirectionInput;
 
     public Vector2 PointerInput { get => pointerInput; set => pointerInput = value; }
     public Vector2 MovementInput { get => movementInput; set => movementInput = value; }
-    public Vector2 DashDirecntionInput {get => dashDirectionInput; set => dashDirectionInput = value; }
+    public Vector2 AttackDirecntionInput {get => attackDirectionInput; set => attackDirectionInput = value; }
     public float Angle {get; private set;}
     public Rigidbody2D AgentRigidbody{get; private set;}
     private float nextSpawnDirtTime;
@@ -46,23 +47,16 @@ public class Agent : Character
                 nextSpawnDirtTime = Time.time + .08f;
             }
         }
-        agentMover.DashDirectionInput = dashDirectionInput;
+        // agentMover.AttackDirectionInput = attackDirectionInput;
         weaponParent.PointerPosition = pointerInput;
         AnimateCharacter();
     }
 
     public void PerformAttack()
     {
-        weaponParent.Attack();
         
-        // SetVelocity(dashSpeed, attackDirection);
-        // dashDirectionInput = muzzleChild.position - transform.position;
-        // dashDirectionInput.Normalize();
-        // agentMover.transform.Translate(dashDirectionInput * dashSpeed * Time.deltaTime);
-        // Vector2.MoveTowards(transform.position, muzzleChild.position, dashSpeed);
-        // agentMover.rb2d.velocity = attackDirection * dashSpeed * Time.deltaTime;
-        // attackDirection.Normalize();
-        // agentMover.rb2d.drag = 10f;
+        // weaponParent.Attack();
+        StartCoroutine(weaponParent.AttackSequence());
     }
 
     protected override void OnEnable()
@@ -87,22 +81,27 @@ public class Agent : Character
     }
     private void AimAndShoot()
     {
-        Vector3 aim = new Vector3(dashDirectionInput.x, dashDirectionInput.y, 0f);
-        if(dashDirectionInput.magnitude > 0.01f)
+        Vector3 aim = new Vector3(pointerInput.x, pointerInput.y, 0f);
+        if(pointerInput.magnitude > 0.01f)
         {
-            Angle = Mathf.Atan2(dashDirectionInput.y, dashDirectionInput.x) * Mathf.Rad2Deg;
+            Angle = Mathf.Atan2(pointerInput.y, pointerInput.x) * Mathf.Rad2Deg;
             muzzle.transform.rotation = Quaternion.Euler(new Vector3(0f,0f, Angle));
         }
     }
     public override void TakeDamage(float damage)
     {
         base.TakeDamage(damage);
+        // CameraShaker.Presets.ShortShake2D();
+        CinemachineShake.Instance.ShakeCamera(2f, 0.1f);
+        TimeController.Instance.Stop(0.1f);
     }
 
     public override void Die()
     {
         StopCoroutine(nameof(HurtEffect));
-        // ScoreManager.Instance.AddScore(scorePoint);
+        // CameraShaker.Presets.ShortShake2D();
+        ScoreManager.Instance.AddScore(scorePoint);
+        PoolManager.Release(deathFX, transform.position);
         // PlayerEnergy.Instance.Obtain(deathEnergyBonus);
         EnemyManager.Instance.RemoveFromList(gameObject);
         // lootSpawner.Spawn(transform.position);

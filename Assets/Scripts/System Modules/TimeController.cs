@@ -10,6 +10,7 @@ public class TimeController : Singleton<TimeController>
     float defaultFixedDeltaTime;
     float timeScaleBeforePause;
     float t;
+    bool waiting;
 
     protected override void Awake()
     {
@@ -104,5 +105,21 @@ public class TimeController : Singleton<TimeController>
 
             yield return null;
         }
+    }
+
+    public void Stop(float duration)
+    {
+        if(waiting)
+            return;
+        Time.timeScale =0.0f;
+        StartCoroutine(Wait(duration));
+    }
+
+    IEnumerator Wait(float duration)
+    {
+        waiting = true;
+        yield return new WaitForSecondsRealtime(duration);
+        Time.timeScale = 1.0f;
+        waiting = false;
     }
 }

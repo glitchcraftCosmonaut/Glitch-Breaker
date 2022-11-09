@@ -25,12 +25,13 @@ public class EnemyAI : MonoBehaviour
 
     //Inputs sent from the Enemy AI to the Enemy controller
     public UnityEvent OnAttackPressed;
-    public UnityEvent<Vector2> OnMovementInput, OnPointerInput, OnDashDirectionInput;
+    public UnityEvent<Vector2> OnMovementInput, OnPointerInput;
+    // , OnDashDirectionInput;
 
     [SerializeField]
     private Vector2 movementInput;
-    [SerializeField]
-    public Vector2 dashDirectionInput;
+    // [SerializeField]
+    // public Vector2 dashDirectionInput;
 
     [SerializeField]
     public ContextSolver movementDirectionSolver;
@@ -81,7 +82,7 @@ public class EnemyAI : MonoBehaviour
         OnMovementInput?.Invoke(movementInput);
 
         //dashing input
-        OnDashDirectionInput?.Invoke(dashDirectionInput);
+        // OnDashDirectionInput?.Invoke(dashDirectionInput);
     }
 
     private IEnumerator ChaseAndAttack()
@@ -91,7 +92,7 @@ public class EnemyAI : MonoBehaviour
             //Stopping Logic
             Debug.Log("Stopping");
             movementInput = Vector2.zero;
-            dashDirectionInput = Vector2.zero;
+            // dashDirectionInput = Vector2.zero;
             following = false;
             yield break;
         }
@@ -106,23 +107,27 @@ public class EnemyAI : MonoBehaviour
                 // movementInput = direction.normalized;
                 // transform.Translate(direction * 5 * Time.deltaTime);
                 movementInput = Vector2.zero;
-                // yield return new WaitForSeconds(1f);
+                // yield return new WaitForSeconds(.5f);
                 OnAttackPressed?.Invoke();
                 yield return new WaitForSeconds(attackDelay);
-                dashDirectionInput = Vector2.zero;
+                // dashDirectionInput = Vector2.zero;
                 StartCoroutine(ChaseAndAttack());
             }
             else
             {
                 //Chase logic
                 movementInput = movementDirectionSolver.GetDirectionToMove(steeringBehaviours, aiData);
-                dashDirectionInput = Vector2.zero;
+                // dashDirectionInput = Vector2.zero;
                 rb.drag = 1f;
                 yield return new WaitForSeconds(aiUpdateDelay);
                 StartCoroutine(ChaseAndAttack());
             }
 
         }
+        // while(gameObject.activeSelf)
+        // {
+        //     // if(GameManager.GameState == GameState.GameOver) yield break;
+        // }
 
     }
 

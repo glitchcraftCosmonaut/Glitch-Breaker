@@ -6,7 +6,13 @@ using UnityEngine.UI;
 public class Statsbar_HUD : Statsbar
 {
     [SerializeField] protected Text percentText;
+    [HideInInspector] public Animator animator;
     
+    public override void Awake()
+    {
+        base.Awake();
+        animator = GetComponent<Animator>();
+    }
     protected virtual void SetPercentText()
     {
         percentText.text = Mathf.RoundToInt(targetFillAmount * 100f) + "%";

@@ -48,6 +48,7 @@ public class PlayerGroundedState : PlayerState
         if (player.input.AttackInputs[(int)CombatInputs.primary])
         {
             // player.CheckIfShouldFlipMousePos(mouseInputX);
+            AudioSetting.Instance.PlaySFX(player.slashSFX);
             stateMachine.ChangeState(player.PrimaryAttack);
             PoolManager.Release(player.projectile, player.muzzle.position, player.muzzle.transform.rotation);
         }
