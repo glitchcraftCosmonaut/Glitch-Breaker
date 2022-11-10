@@ -56,7 +56,7 @@ public class WeaponParent : MonoBehaviour
     }
     public IEnumerator AttackSequence()
     {
-        if (!attackBlocked)
+        if (!attackBlocked && GameManager.GameState != GameState.GameOver)
         {
             PrepareAttack();
             yield return new WaitForSeconds(.5f);

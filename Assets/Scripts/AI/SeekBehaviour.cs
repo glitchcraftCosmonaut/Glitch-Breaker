@@ -14,8 +14,18 @@ public class SeekBehaviour : SteeringBehaviour
     bool reachedLastTarget = true;
 
     //gizmo parameters
+    [SerializeField]
     private Vector2 targetPositionCached;
     private float[] interestsTemp;
+
+    // private void Awake()
+    // {
+    //     targetPositionCached
+    // }
+    private void OnDisable() 
+    {
+        targetPositionCached = new Vector2(0,0);
+    }
 
     public override (float[] danger, float[] interest) GetSteering(float[] danger, float[] interest, AIData aiData)
     {

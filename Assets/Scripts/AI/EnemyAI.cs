@@ -45,11 +45,21 @@ public class EnemyAI : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    private void Start()
+    // private void Start()
+    // {
+    //     //Detecting Player and Obstacles around
+    //     InvokeRepeating("PerformDetection", 0, detectionDelay);
+    //     // dashDirectionInput = transform.position - aiData.currentTarget.position;
+    // }
+    private void OnEnable() 
     {
-        //Detecting Player and Obstacles around
+        // movementDirectionSolver.enabled = true;
         InvokeRepeating("PerformDetection", 0, detectionDelay);
-        // dashDirectionInput = transform.position - aiData.currentTarget.position;
+    }
+    private void OnDisable()
+    {
+        // distance = 0;
+        // aiData.currentTarget = null;
     }
 
     private void PerformDetection()
@@ -62,8 +72,12 @@ public class EnemyAI : MonoBehaviour
     }
      private void Update()
     {
+        // if(!gameObject.activeSelf)
+        // {
+            
+        // }
         //Enemy AI movement based on Target availability
-        if (aiData.currentTarget != null)
+        if (aiData.currentTarget != null )
         {
             //Looking at the Target
             OnPointerInput?.Invoke(aiData.currentTarget.position);

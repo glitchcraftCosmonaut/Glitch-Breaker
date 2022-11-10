@@ -104,6 +104,7 @@ public class Agent : Character
         PoolManager.Release(deathFX, transform.position);
         // PlayerEnergy.Instance.Obtain(deathEnergyBonus);
         EnemyManager.Instance.RemoveFromList(gameObject);
+        // Destroy(gameObject);
         // lootSpawner.Spawn(transform.position);
         // SpawnProjectile(numberOfColumns);
         base.Die();
