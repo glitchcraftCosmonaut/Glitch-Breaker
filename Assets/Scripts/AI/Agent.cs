@@ -92,7 +92,7 @@ public class Agent : Character
     {
         base.TakeDamage(damage);
         // CameraShaker.Presets.ShortShake2D();
-        CinemachineShake.Instance.ShakeCamera(2f, 0.1f);
+        CinemachineShake.Instance.ShakeCamera(0.3f, 0.1f);
         TimeController.Instance.Stop(0.1f);
     }
 
@@ -102,6 +102,7 @@ public class Agent : Character
         // CameraShaker.Presets.ShortShake2D();
         ScoreManager.Instance.AddScore(scorePoint);
         PoolManager.Release(deathFX, transform.position);
+        CinemachineShake.Instance.ShakeCamera(0.5f, 0.1f);
         // PlayerEnergy.Instance.Obtain(deathEnergyBonus);
         EnemyManager.Instance.RemoveFromList(gameObject);
         // Destroy(gameObject);

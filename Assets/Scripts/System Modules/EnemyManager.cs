@@ -8,6 +8,10 @@ public class EnemyManager : Singleton<EnemyManager>
     public int WaveNumber => waveNumber;
     public float TimeBetweenWaves => timeBetweenWaves;
     public Collider2D[] colliders;
+
+    public PolygonCollider2D polygonCollider;
+    public int numberRandomPositions = 10;
+
     public float radius;
     public LayerMask mask;
     [SerializeField] bool spawnEnemy = true;
@@ -35,6 +39,10 @@ public class EnemyManager : Singleton<EnemyManager>
     int enemyAmount;
     Vector3 pos;
 
+    Vector3 rndPoint3D;
+    Vector2 rndPoint2D;
+    Vector2 rndPointInside;
+
     List<GameObject> enemyList;
 
     protected override void Awake()
@@ -50,6 +58,21 @@ public class EnemyManager : Singleton<EnemyManager>
 
     IEnumerator Start()
     {
+        if (polygonCollider == null) GetComponent<PolygonCollider2D>();
+        // int j = 0;
+        // while ( j < numberRandomPositions)
+        // {
+        //     Vector3 rndPoint3D = RandomPointInBounds(polygonCollider.bounds, 1f);
+        //     Vector2 rndPoint2D = new Vector2(rndPoint3D.x, rndPoint3D.y);
+        //     Vector2 rndPointInside = polygonCollider.ClosestPoint(new Vector2(rndPoint2D.x, rndPoint2D.y));
+        //     if (rndPointInside.x == rndPoint2D.x && rndPointInside.y == rndPoint2D.y)
+        //     {
+        //         GameObject rndCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //         rndCube.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        //         rndCube.transform.position = rndPoint2D;
+        //         j++;
+        //     }
+        // }
         while(spawnEnemy && GameManager.GameState != GameState.GameOver)
         {
             yield return waitTimeBetweenWaves;
@@ -60,6 +83,9 @@ public class EnemyManager : Singleton<EnemyManager>
     private void Update()
     {
         pos = center + new Vector3(Random.Range(-size.x / 2, size.x / 2), Random.Range(-size.y / 2, size.y / 2), 0);
+        rndPoint3D = RandomPointInBounds(polygonCollider.bounds, 1f);
+        rndPoint2D = new Vector2(rndPoint3D.x, rndPoint3D.y);
+        rndPointInside = polygonCollider.ClosestPoint(new Vector2(rndPoint2D.x, rndPoint2D.y));
         
     }
 
@@ -68,16 +94,14 @@ public class EnemyManager : Singleton<EnemyManager>
         Vector3 spawnPos = new Vector3(0,0,0);
         bool canSpawnHere = false;
         // int safetyNet = 0;
-
-        while(!canSpawnHere)
+        if (rndPointInside.x == rndPoint2D.x && rndPointInside.y == rndPoint2D.y)
         {
-
             if(waveNumber % bossWaveNumber == 0 && spawnBoss == true)
             {
                 waveUI.SetActive(true);
                 yield return waitUIWarning;
                 waveUI.SetActive(false);
-                var boss = Instantiate(bossPrefab, pos, Quaternion.identity);
+                var boss = Instantiate(bossPrefab, rndPoint2D, Quaternion.identity);
                 // var boss = PoolManager.Release(bossPrefab, pos);
                 enemyList.Add(boss);
             }
@@ -88,9 +112,9 @@ public class EnemyManager : Singleton<EnemyManager>
                 for(int i = 0; i < enemyAmount; i++)
                 {
                     canSpawnHere = PreventOverLap(pos);
-                    enemyList.Add(Instantiate(enemyPrefab[Random.Range(0, enemyPrefab.Length)], pos, Quaternion.identity));
+                    enemyList.Add(Instantiate(enemyPrefab[Random.Range(0, enemyPrefab.Length)], rndPoint2D, Quaternion.identity));
                     // enemyList.Add(PoolManager.Release(enemyPrefab[Random.Range(0, enemyPrefab.Length)], pos));
-                    PoolManager.Release(spawnVFX, pos);
+                    PoolManager.Release(spawnVFX, rndPoint2D);
                     // enemyList.Add(PoolManager.Release(enemyPrefab[enemyPrefab.Length]));
 
                     yield return waitTimeBetweenSpawns;
@@ -102,30 +126,72 @@ public class EnemyManager : Singleton<EnemyManager>
             waveNumber++;
         }
 
+
+        // while(!canSpawnHere)
+        // {
+
+        //     if(waveNumber % bossWaveNumber == 0 && spawnBoss == true)
+        //     {
+        //         waveUI.SetActive(true);
+        //         yield return waitUIWarning;
+        //         waveUI.SetActive(false);
+        //         var boss = Instantiate(bossPrefab, pos, Quaternion.identity);
+        //         // var boss = PoolManager.Release(bossPrefab, pos);
+        //         enemyList.Add(boss);
+        //     }
+        //     else
+        //     {
+        //         enemyAmount = Mathf.Clamp(enemyAmount, minEnemyAmount + waveNumber / bossWaveNumber, maxEnemyAmount);
+
+        //         for(int i = 0; i < enemyAmount; i++)
+        //         {
+        //             canSpawnHere = PreventOverLap(pos);
+        //             enemyList.Add(Instantiate(enemyPrefab[Random.Range(0, enemyPrefab.Length)], pos, Quaternion.identity));
+        //             // enemyList.Add(PoolManager.Release(enemyPrefab[Random.Range(0, enemyPrefab.Length)], pos));
+        //             PoolManager.Release(spawnVFX, pos);
+        //             // enemyList.Add(PoolManager.Release(enemyPrefab[enemyPrefab.Length]));
+
+        //             yield return waitTimeBetweenSpawns;
+        //         }
+
+        //     }
+        //     yield return waitUntilNoEnemy;
+
+        //     waveNumber++;
+        // }
+
+    }
+    private Vector3 RandomPointInBounds(Bounds bounds, float scale)
+    {
+        return new Vector3(
+            Random.Range(bounds.min.x * scale, bounds.max.x * scale),
+            Random.Range(bounds.min.y * scale, bounds.max.y * scale),
+            Random.Range(bounds.min.z * scale, bounds.max.z * scale)
+        );
     }
     
     bool PreventOverLap(Vector3 spawnPos)
     {
         colliders = Physics2D.OverlapCircleAll(transform.position, radius, mask);
-        // for(int i = 0; i < colliders.Length; i++)
-        // {
-        //     Vector3 centerPoint = colliders[i].bounds.center;
-        //     float width = colliders[i].bounds.extents.x;
-        //     float height = colliders[i].bounds.extents.y;
+        for(int i = 0; i < colliders.Length; i++)
+        {
+            Vector3 centerPoint = colliders[i].bounds.center;
+            float width = colliders[i].bounds.extents.x;
+            float height = colliders[i].bounds.extents.y;
 
-        //     float leftExtent = centerPoint.x - width;
-        //     float rightExtent = centerPoint.x + width;
-        //     float lowerExtent = centerPoint.y - height;
-        //     float upperExtent = centerPoint.y + height;
+            float leftExtent = centerPoint.x - width;
+            float rightExtent = centerPoint.x + width;
+            float lowerExtent = centerPoint.y - height;
+            float upperExtent = centerPoint.y + height;
 
-        //     if(spawnPos.x >= leftExtent && spawnPos.x <= rightExtent)
-        //     {
-        //         if(spawnPos.y >= lowerExtent && spawnPos.y <= upperExtent)
-        //         {
-        //             return false;
-        //         }
-        //     }
-        // }
+            if(spawnPos.x >= leftExtent && spawnPos.x <= rightExtent)
+            {
+                if(spawnPos.y >= lowerExtent && spawnPos.y <= upperExtent)
+                {
+                    return false;
+                }
+            }
+        }
         return true;
     }
     

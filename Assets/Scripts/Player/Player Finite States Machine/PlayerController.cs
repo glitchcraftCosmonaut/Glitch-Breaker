@@ -220,7 +220,7 @@ public class PlayerController : Character
     {
         // StartCoroutine(HurtEffect());
         base.TakeDamage(damage);
-        CinemachineShake.Instance.ShakeCamera(2f, 0.1f);
+        CinemachineShake.Instance.ShakeCamera(0.3f, 0.1f);
         TimeController.Instance.Stop(0.1f);
         // PowerDown();
         statsbar_HUD.UpdateStates(health, maxHealth);
@@ -253,6 +253,7 @@ public class PlayerController : Character
     {
         GameManager.onGameOver?.Invoke();
         GameManager.GameState = GameState.GameOver;
+        CinemachineShake.Instance.ShakeCamera(0.5f, 0.1f);
         statsbar_HUD.UpdateStates(0f, maxHealth);
         // StopCoroutine(HurtEffect());
         base.Die();
